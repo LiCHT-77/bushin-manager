@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  firebase:
+    build:
+      context: ./docker/firebase
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./docker/firebase/emulators/:/opt/workspace:cached
+      - ./docker/firebase/bin/:/root.cached:cached
+      - ./docker/firebase/config/:/root/.config:cached
+    ports:
+      - 4000:4000 # Emulator Suite UI
+      - 4001:5000 # Firebase Hosting
+      - 5001:5001 # Clound Functions
+      - 9000:9000 # Realtime Database
+      - 8081:8081 # Cloud Firestore
+      - 8085:8085 # Cloud Pub/Sub
+    working_dir: /opt/workspace
+    command: bash
+    tty: true
+  node:
+    build:
+        context: ./docker/node
+        dockerfile: ./Dockerfile
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    ports:
+      - 3000:3000
+    environment:
+      - HOST=0.0.0.0
+      - CHOKIDAR_USEPOLLING=true
+    tty: true
