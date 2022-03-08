@@ -8,7 +8,7 @@
 		"node8DeploysDisabledAfter": 1613390400000,
 		"node8RuntimeDisabledAfter": 1615809600000,
 		"node8WarnAfter": 1600128000000,
-		"fetched": 1645371247809
+		"fetched": 1646748212852
 	},
 	"usage": true,
 	"user": {
@@ -40,5 +40,6 @@
 	],
 	"activeProjects": {
 		"/opt/workspace": "bushin-manager"
-	}
+	},
+	"lastError": 1646748191335
 }

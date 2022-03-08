@@ -1,13 +1,22 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app temporary>
-      <!--  -->
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title class="text-h6">
+            Application
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            subtext
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
     </v-navigation-drawer>
 
     <v-app-bar app dark color="primary">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>ApplicationA</v-toolbar-title>
     </v-app-bar>
 
     <v-main>
@@ -19,7 +28,6 @@
 <script>
 import { defineComponent, ref } from '@vue/composition-api';
 export default defineComponent({
-  name: 'DefaultLayout',
   setup() {
     const drawer = ref(false);
     return {
@@ -30,4 +38,5 @@ export default defineComponent({
 </script>
 
 <style>
+
 </style>
