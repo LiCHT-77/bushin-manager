@@ -5,9 +5,19 @@
         <h1>選手管理</h1>
       </v-col>
     </v-row>
+    <v-row class="mt-0">
+      <v-col cols="12" class="d-flex align-center">
+        <v-btn outlined small color="primary" @click="playerFormOpen()">
+          選手追加<v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col cols="12">
-        <player-list :players="players"></player-list>
+        <player-list
+          :players="players"
+          @select="selectPlayer($event)"
+        ></player-list>
       </v-col>
     </v-row>
     <v-dialog v-model="dialog" width="500">
@@ -22,7 +32,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, useFetch, useRoute } from "@nuxtjs/composition-api";
+import { defineComponent, ref, useFetch, useMeta, useRoute, useRouter } from "@nuxtjs/composition-api";
 import PlayerList from "~/components/players/PlayerList.vue";
 import PlayerForm from "~/components/players/PlayerForm.vue";
 import usePlayers from "~/composable/players/usePlayers";
@@ -49,26 +59,38 @@ export default defineComponent({
 
     // create player
     const { createPlayer } = usePlayer();
-    const playerFormKey = ref(0);
     const playerLoading = ref(false);
     const dialog = ref(false);
     const savePlayer = async (player) => {
       const start = performance.now();
       dialog.value = false;
-      await createPlayer(contestId, player);
+      await createPlayer(contestId, player.value);
       const t = performance.now() - start;
       setTimeout(() => {
         playerLoading.value = false;
-        playerFormKey.value++;
       }, 1000 - t);
+    };
+
+    const playerFormKey = ref(0);
+    const playerFormOpen = () => {
+      playerFormKey.value++;
+      dialog.value = true;
+    };
+
+    const router = useRouter();
+    const selectPlayer = (playerId) => {
+      router.push({ name: 'contests-setting-contestId-players-playerId', params: { contestId, playerId } });
     };
 
     return {
       players,
+      contestId,
       playerFormKey,
       playerLoading,
       dialog,
       savePlayer,
+      playerFormOpen,
+      selectPlayer,
     };
   },
   head: {},

@@ -30,7 +30,7 @@ export default defineComponent({
     const router = useRouter();
     const saveContest = async (contest) => {
       await createContest(contest.value);
-      router.push({name: 'setting-contests'});
+      router.push({name: 'contests'});
     };
 
     return { saveContest };

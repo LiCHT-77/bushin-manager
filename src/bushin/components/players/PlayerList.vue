@@ -2,13 +2,17 @@
   <v-simple-table>
     <template #default>
       <thead>
-        <th>氏名</th>
-        <th>道場</th>
-        <th>年齢</th>
-        <th>級/段</th>
+        <th class="text-left">氏名</th>
+        <th class="text-left">道場</th>
+        <th class="text-left">年齢</th>
+        <th class="text-left">級/段</th>
       </thead>
       <tbody>
-        <tr v-for="player in players" :key="player.id" @click="console.log(player.id)">
+        <tr
+          v-for="player in players"
+          :key="player.id"
+          @click="selectPlayer(player.id)"
+        >
           <td>{{ player.name }}</td>
           <td>{{ player.dojo }}</td>
           <td>{{ player.age }}</td>
@@ -28,6 +32,12 @@ export default defineComponent({
       type: Array,
       required: true,
     }
+  },
+  setup(_, { emit }) {
+    const selectPlayer = playerId => emit('select', playerId);
+    return {
+      selectPlayer,
+    };
   }
 });
 </script>

@@ -43,7 +43,8 @@
 </template>
 
 <script>
-import { defineComponent } from "@nuxtjs/composition-api";
+import { defineComponent, ref, useFetch } from "@nuxtjs/composition-api";
+import usePlayer from "~/composable/players/usePlayer";
 
 export default defineComponent({
   props: {
@@ -63,10 +64,10 @@ export default defineComponent({
   setup({ contestId, playerId }, { emit }) {
     // Division setup
     const ranks = ['8級', '7級', '6級', '5級', '4級', '3級', '2級', '1級', '初段', '2段', '3段', '4段'];
-    const { player, getDivision } = useDivision();
+    const { player, getPlayer } = usePlayer();
     if (contestId !== '' && playerId !== '') {
       useFetch(async () => {
-        await getDivision(contestId, playerId);
+        await getPlayer(contestId, playerId);
       });
     }
 
@@ -84,7 +85,7 @@ export default defineComponent({
         value => !!value || "必ず入力してください",
       ],
       rank: [
-        value => value.length === 1 || "級/段は必ず選択してください"
+        value => !!value || "級/段は必ず選択してください"
       ],
     };
 
