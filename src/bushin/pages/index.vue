@@ -30,7 +30,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, useMeta } from '@nuxtjs/composition-api';
 export default defineComponent({
   name: 'IndexPage',

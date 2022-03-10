@@ -11,10 +11,11 @@
   </v-container>
 </template>
 
-<script>
-import { defineComponent, useMeta, useRouter } from "@nuxtjs/composition-api";
-import ContestForm from "~/components/contests/ContestForm.vue";
-import useContest from "~/composable/contests/useContest";
+<script lang="ts">
+import { defineComponent, useMeta, useRouter } from '@nuxtjs/composition-api';
+import ContestForm from '~/components/contests/ContestForm.vue';
+import useContest from '~/composable/contests/useContest';
+import { Contest } from '~/types/model';
 
 export default defineComponent({
   components: {
@@ -26,11 +27,11 @@ export default defineComponent({
     title.value = '大会作成';
 
     // create new Contest
-    const {createContest} = useContest();
+    const { createContest } = useContest();
     const router = useRouter();
-    const saveContest = async (contest) => {
+    const saveContest = async (contest: Contest) => {
       await createContest(contest.value);
-      router.push({name: 'contests'});
+      router.push({ name: 'contests' });
     };
 
     return { saveContest };

@@ -19,10 +19,15 @@
   </v-container>
 </template>
 
-<script>
-import { defineComponent, ref, useMeta, useRoute } from "@nuxtjs/composition-api";
-import BlockGroupForm from "~/components/blockGroups/BlockGroupForm.vue";
-import SettingBreadcrumbs from "~/components/SettingBreadcrumbs.vue";
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  useMeta,
+  useRoute,
+} from '@nuxtjs/composition-api';
+import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
+import SettingBreadcrumbs from '~/components/SettingBreadcrumbs.vue';
 
 export default defineComponent({
   components: {

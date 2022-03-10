@@ -42,9 +42,15 @@
   </v-card>
 </template>
 
-<script>
-import { defineComponent, ref, useFetch } from "@nuxtjs/composition-api";
-import usePlayer from "~/composable/players/usePlayer";
+<script lang="ts">
+import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
+import usePlayer from '~/composable/players/usePlayer';
+
+export interface VForm {
+  validate: () => boolean;
+  reset: () => void;
+  resetValidation: () => void;
+}
 
 export default defineComponent({
   props: {
@@ -59,11 +65,24 @@ export default defineComponent({
     loading: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   setup({ contestId, playerId }, { emit }) {
     // Division setup
-    const ranks = ['8級', '7級', '6級', '5級', '4級', '3級', '2級', '1級', '初段', '2段', '3段', '4段'];
+    const ranks = [
+      '8級',
+      '7級',
+      '6級',
+      '5級',
+      '4級',
+      '3級',
+      '2級',
+      '1級',
+      '初段',
+      '2段',
+      '3段',
+      '4段',
+    ];
     const { player, getPlayer } = usePlayer();
     if (contestId !== '' && playerId !== '') {
       useFetch(async () => {
@@ -74,25 +93,21 @@ export default defineComponent({
     // validation rules
     const validations = {
       name: [
-        value => !!value || "必ず入力してください",
-        value => value.length <= 10 || "10文字以内で入力してください"
+        (value: string) => !!value || '必ず入力してください',
+        (value: string) => value.length <= 10 || '10文字以内で入力してください',
       ],
       dojo: [
-        value => !!value || "必ず入力してください",
-        value => value.length <= 10 || "10文字以内で入力してください"
+        (value: string) => !!value || '必ず入力してください',
+        (value: string) => value.length <= 10 || '10文字以内で入力してください',
       ],
-      age: [
-        value => !!value || "必ず入力してください",
-      ],
-      rank: [
-        value => !!value || "級/段は必ず選択してください"
-      ],
+      age: [(value: string) => !!value || '必ず入力してください'],
+      rank: [(value: string) => !!value || '級/段は必ず選択してください'],
     };
 
     // save
-    const playerForm = ref(null);
+    const playerForm = ref<VForm>();
     const save = () => {
-      if (playerForm.value.validate()) {
+      if (playerForm.value !== undefined && playerForm.value.validate()) {
         emit('save', player);
       }
     };
@@ -104,10 +119,9 @@ export default defineComponent({
       validations,
       save,
     };
-  }
+  },
 });
 </script>
 
 <style>
-
 </style>

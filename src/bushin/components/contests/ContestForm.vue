@@ -57,9 +57,21 @@
   </v-card>
 </template>
 
-<script>
-import { computed, defineComponent, ref, useContext, useFetch } from "@nuxtjs/composition-api";
-import useContest from "~/composable/contests/useContest";
+<script lang="ts">
+import {
+  computed,
+  defineComponent,
+  ref,
+  useContext,
+  useFetch,
+} from '@nuxtjs/composition-api';
+import useContest from '~/composable/contests/useContest';
+
+export interface VForm {
+  validate: () => boolean;
+  reset: () => void;
+  resetValidation: () => void;
+}
 
 export default defineComponent({
   props: {
@@ -70,7 +82,7 @@ export default defineComponent({
     loading: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   setup({ contestId }, { emit }) {
     // setup `Contest`
@@ -88,27 +100,27 @@ export default defineComponent({
       get: () => $dateFns.format(contest.value.date, dateFormat),
       set: (val) => {
         contest.value.date = $dateFns.parse(val, dateFormat, new Date());
-      }
+      },
     });
 
     // is_publish label
-    const isPublishLabel = computed(() => contest.value.isPublish ? '試合結果を公開する' : '試合結果を公開しない');
+    const isPublishLabel = computed(() =>
+      contest.value.isPublish ? '試合結果を公開する' : '試合結果を公開しない'
+    );
 
     // validations
     const validations = {
       name: [
-        value => !!value || "必ず入力してください",
-        value => value.length <= 10 || "10文字以内で入力してください"
+        (value: string) => !!value || '必ず入力してください',
+        (value: string) => value.length <= 10 || '10文字以内で入力してください',
       ],
-      date: [
-        value => !!value || "必ず入力してください",
-      ],
+      date: [(value: string) => !!value || '必ず入力してください'],
     };
 
     // emit `save` event to parent component
-    const contestForm = ref(null);
+    const contestForm = ref<VForm>();
     const save = () => {
-      if (contestForm.value.validate()) {
+      if (contestForm.value !== undefined && contestForm.value.validate()) {
         emit('save', contest);
       }
     };
@@ -125,7 +137,7 @@ export default defineComponent({
       save,
       menu,
     };
-  }
+  },
 });
 </script>
 

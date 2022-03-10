@@ -29,10 +29,10 @@
   </setting-list>
 </template>
 
-<script>
-import { defineComponent, useFetch } from "@nuxtjs/composition-api";
-import useDivisions from "~/composable/divisions/useDivisions";
-import SettingList from "~/components/SettingList.vue";
+<script lang="ts">
+import { defineComponent, useFetch } from '@nuxtjs/composition-api';
+import useDivisions from '~/composable/divisions/useDivisions';
+import SettingList from '~/components/SettingList.vue';
 
 export default defineComponent({
   components: {
@@ -42,7 +42,7 @@ export default defineComponent({
     contestId: {
       type: String,
       required: true,
-    }
+    },
   },
   setup({ contestId }) {
     const { divisions, getDivisionList, updateOrders } = useDivisions();
@@ -58,7 +58,7 @@ export default defineComponent({
     };
 
     return { divisions, onFlippedDivision };
-  }
+  },
 });
 </script>
 

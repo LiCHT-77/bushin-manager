@@ -37,9 +37,15 @@
     </v-form>
   </v-card>
 </template>
-<script>
-import { defineComponent, ref, useFetch } from "@nuxtjs/composition-api";
-import useDivision from "~/composable/divisions/useDivision";
+<script lang="ts">
+import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
+import useDivision from '~/composable/divisions/useDivision';
+
+export interface VForm {
+  validate: () => boolean;
+  reset: () => void;
+  resetValidation: () => void;
+}
 
 export default defineComponent({
   props: {
@@ -54,11 +60,24 @@ export default defineComponent({
     loading: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   setup({ contestId, divisionId }, { emit }) {
     // Division setup
-    const ranks = ['8級', '7級', '6級', '5級', '4級', '3級', '2級', '1級', '初段', '2段', '3段', '4段'];
+    const ranks = [
+      '8級',
+      '7級',
+      '6級',
+      '5級',
+      '4級',
+      '3級',
+      '2級',
+      '1級',
+      '初段',
+      '2段',
+      '3段',
+      '4段',
+    ];
     const contestTypes = ['通常', '3形合計'];
     const { division, getDivision } = useDivision();
     if (contestId !== '' && divisionId !== '') {
@@ -70,21 +89,22 @@ export default defineComponent({
     // validation rules
     const validations = {
       name: [
-        value => !!value || "必ず入力してください",
-        value => value.length <= 10 || "10文字以内で入力してください"
+        (value: string) => !!value || '必ず入力してください',
+        (value: string) => value.length <= 10 || '10文字以内で入力してください',
       ],
       ranks: [
-        value => value.length >= 1 || "級/段は1つ以上選択してください"
+        (value: string) =>
+          value.length >= 1 || '級/段は1つ以上選択してください',
       ],
       contestTypes: [
-        value => !!value || "試合形式を選択してください",
-      ]
+        (value: string) => !!value || '試合形式を選択してください',
+      ],
     };
 
     // save
-    const divisionForm = ref(null);
+    const divisionForm = ref<VForm>();
     const save = () => {
-      if (divisionForm.value.validate()) {
+      if (divisionForm.value !== undefined && divisionForm.value.validate()) {
         emit('save', division);
       }
     };
@@ -97,7 +117,7 @@ export default defineComponent({
       validations,
       save,
     };
-  }
+  },
 });
 </script>
 

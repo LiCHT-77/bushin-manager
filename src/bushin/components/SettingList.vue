@@ -24,41 +24,38 @@
   </v-list>
 </template>
 
-<script>
-import { computed, defineComponent, toRefs } from "@nuxtjs/composition-api";
-import draggable from "vuedraggable";
+<script lang="ts">
+import { computed, defineComponent, toRefs } from '@nuxtjs/composition-api';
+import draggable from 'vuedraggable';
 
 export default defineComponent({
   components: {
-    draggable
+    draggable,
   },
   props: {
     items: {
       type: Array,
-      required: true
+      required: true,
     },
     draggable: {
       type: String,
-      required: true
+      required: true,
     },
   },
-  emits: [
-    'update:items',
-    'flipped'
-  ],
-  setup(props, {emit}) {
+  emits: ['update:items', 'flipped'],
+  setup(props, { emit }) {
     const { items } = toRefs(props);
     const itemComputed = computed({
       get: () => items.value,
       set: (val) => {
         emit('update:items', val);
-      }
+      },
     });
     return {
       itemComputed,
-      emit
+      emit,
     };
-  }
+  },
 });
 </script>
 

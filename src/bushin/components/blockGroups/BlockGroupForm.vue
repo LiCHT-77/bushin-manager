@@ -23,9 +23,15 @@
   </v-card>
 </template>
 
-<script>
-import { defineComponent, ref, useFetch } from "@nuxtjs/composition-api";
-import useBlockGroup from "~/composable/blockGroups/useBlockGroup";
+<script lang="ts">
+import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
+import useBlockGroup from '~/composable/blockGroups/useBlockGroup';
+
+export interface VForm {
+  validate: () => boolean;
+  reset: () => void;
+  resetValidation: () => void;
+}
 
 export default defineComponent({
   props: {
@@ -39,12 +45,12 @@ export default defineComponent({
     },
     blockGroupId: {
       type: String,
-      default: ''
+      default: '',
     },
     loading: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   setup({ contestId, divisionId, blockGroupId }, { emit }) {
     const { blockGroup, getBlockGroup } = useBlockGroup();
@@ -57,15 +63,18 @@ export default defineComponent({
     // validation rules
     const validations = {
       name: [
-        value => !!value || "必ず入力してください",
-        value => value.length <= 10 || "10文字以内で入力してください"
-      ]
+        (value: string) => !!value || '必ず入力してください',
+        (value: string) => value.length <= 10 || '10文字以内で入力してください',
+      ],
     };
 
     // save
-    const blockGroupForm = ref(null);
+    const blockGroupForm = ref<VForm>();
     const save = () => {
-      if (blockGroupForm.value.validate()) {
+      if (
+        blockGroupForm.value !== undefined &&
+        blockGroupForm.value.validate()
+      ) {
         emit('save', blockGroup);
       }
     };
@@ -75,7 +84,7 @@ export default defineComponent({
       blockGroupForm,
       save,
     };
-  }
+  },
 });
 </script>
 

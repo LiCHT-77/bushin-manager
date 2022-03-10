@@ -31,12 +31,20 @@
   </v-container>
 </template>
 
-<script>
-import { defineComponent, ref, useFetch, useMeta, useRoute, useRouter } from "@nuxtjs/composition-api";
-import PlayerList from "~/components/players/PlayerList.vue";
-import PlayerForm from "~/components/players/PlayerForm.vue";
-import usePlayers from "~/composable/players/usePlayers";
-import usePlayer from "~/composable/players/usePlayer";
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  useFetch,
+  useMeta,
+  useRoute,
+  useRouter,
+} from '@nuxtjs/composition-api';
+import PlayerList from '~/components/players/PlayerList.vue';
+import PlayerForm from '~/components/players/PlayerForm.vue';
+import usePlayers from '~/composable/players/usePlayers';
+import usePlayer from '~/composable/players/usePlayer';
+import { Player } from '~/types/model';
 
 export default defineComponent({
   components: {
@@ -61,7 +69,7 @@ export default defineComponent({
     const { createPlayer } = usePlayer();
     const playerLoading = ref(false);
     const dialog = ref(false);
-    const savePlayer = async (player) => {
+    const savePlayer = async (player: Player) => {
       const start = performance.now();
       dialog.value = false;
       await createPlayer(contestId, player.value);
@@ -78,8 +86,11 @@ export default defineComponent({
     };
 
     const router = useRouter();
-    const selectPlayer = (playerId) => {
-      router.push({ name: 'contests-setting-contestId-players-playerId', params: { contestId, playerId } });
+    const selectPlayer = (playerId: string) => {
+      router.push({
+        name: 'contests-setting-contestId-players-playerId',
+        params: { contestId, playerId },
+      });
     };
 
     return {

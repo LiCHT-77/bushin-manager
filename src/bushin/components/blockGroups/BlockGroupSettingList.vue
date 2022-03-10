@@ -28,10 +28,10 @@
   </setting-list>
 </template>
 
-<script>
-import { defineComponent, useFetch } from "@nuxtjs/composition-api";
-import useBlockGroups from "~/composable/blockGroups/useBlockGroups";
-import SettingList from "~/components/SettingList.vue";
+<script lang="ts">
+import { defineComponent, useFetch } from '@nuxtjs/composition-api';
+import useBlockGroups from '~/composable/blockGroups/useBlockGroups';
+import SettingList from '~/components/SettingList.vue';
 
 export default defineComponent({
   components: {
@@ -45,7 +45,7 @@ export default defineComponent({
     divisionId: {
       type: String,
       required: true,
-    }
+    },
   },
   setup({ contestId, divisionId }) {
     const { blockGroups, getBlockGroupList, updateOrders } = useBlockGroups();
@@ -61,7 +61,7 @@ export default defineComponent({
     };
 
     return { blockGroups, onFlippedBlockGroup };
-  }
+  },
 });
 </script>
 

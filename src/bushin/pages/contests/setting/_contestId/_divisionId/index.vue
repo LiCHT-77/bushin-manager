@@ -50,14 +50,20 @@
   </v-container>
 </template>
 
-<script>
-import { defineComponent, ref, useMeta, useRoute } from "@nuxtjs/composition-api";
-import DivisionForm from "~/components/divisions/DivisionForm.vue";
-import BlockGroupForm from "~/components/blockGroups/BlockGroupForm.vue";
-import BlockGroupSettingList from "~/components/blockGroups/BlockGroupSettingList.vue";
-import useDivision from "~/composable/divisions/useDivision";
-import useBlockGroup from "~/composable/blockGroups/useBlockGroup";
-import SettingBreadcrumbs from "~/components/SettingBreadcrumbs.vue";
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  useMeta,
+  useRoute,
+} from '@nuxtjs/composition-api';
+import DivisionForm from '~/components/divisions/DivisionForm.vue';
+import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
+import BlockGroupSettingList from '~/components/blockGroups/BlockGroupSettingList.vue';
+import useDivision from '~/composable/divisions/useDivision';
+import useBlockGroup from '~/composable/blockGroups/useBlockGroup';
+import SettingBreadcrumbs from '~/components/SettingBreadcrumbs.vue';
+import { BlockGroup, Division } from '~/types/model';
 
 export default defineComponent({
   components: {
@@ -79,7 +85,7 @@ export default defineComponent({
     // update Division
     const { updateDivision } = useDivision();
     const divisionLoading = ref(false);
-    const saveDivision = async (division) => {
+    const saveDivision = async (division: Division) => {
       divisionLoading.value = true;
       const start = performance.now();
       await updateDivision(contestId, division.value);
@@ -103,7 +109,7 @@ export default defineComponent({
     };
 
     const { createBlockGroup } = useBlockGroup();
-    const saveBlockGroup = async (blockGroup) => {
+    const saveBlockGroup = async (blockGroup: BlockGroup) => {
       const start = performance.now();
       bgDialog.value = false;
       await createBlockGroup(contestId, divisionId, blockGroup.value);

@@ -23,22 +23,22 @@
   </v-simple-table>
 </template>
 
-<script>
-import { defineComponent } from "@nuxtjs/composition-api";
+<script lang="ts">
+import { defineComponent } from '@nuxtjs/composition-api';
 
 export default defineComponent({
   props: {
     players: {
       type: Array,
       required: true,
-    }
+    },
   },
   setup(_, { emit }) {
-    const selectPlayer = playerId => emit('select', playerId);
+    const selectPlayer = (playerId: string) => emit('select', playerId);
     return {
       selectPlayer,
     };
-  }
+  },
 });
 </script>
 

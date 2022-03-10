@@ -18,14 +18,20 @@
   </v-container>
 </template>
 
-<script>
-import { defineComponent, ref, useMeta, useRoute } from "@nuxtjs/composition-api";
-import PlayerForm from "~/components/players/PlayerForm.vue";
-import usePlayer from "~/composable/players/usePlayer";
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  useMeta,
+  useRoute,
+} from '@nuxtjs/composition-api';
+import PlayerForm from '~/components/players/PlayerForm.vue';
+import usePlayer from '~/composable/players/usePlayer';
+import { Player } from '~/types/model';
 
 export default defineComponent({
   components: {
-    PlayerForm
+    PlayerForm,
   },
   setup() {
     // meta
@@ -38,7 +44,7 @@ export default defineComponent({
 
     const { updatePlayer } = usePlayer();
     const playerLoading = ref(false);
-    const savePlayer = async (player) => {
+    const savePlayer = async (player: Player) => {
       playerLoading.value = true;
       const start = performance.now();
       await updatePlayer(contestId, player.value);

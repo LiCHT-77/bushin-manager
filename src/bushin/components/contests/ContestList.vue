@@ -17,7 +17,7 @@
   </v-list>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, useFetch } from '@nuxtjs/composition-api';
 import useContests from '~/composable/contests/useContests';
 
@@ -26,11 +26,11 @@ export default defineComponent({
     const { contests, getContestList } = useContests();
 
     useFetch(async () => {
-        await getContestList();
+      await getContestList();
     });
 
     return {
-      contests
+      contests,
     };
   },
 });

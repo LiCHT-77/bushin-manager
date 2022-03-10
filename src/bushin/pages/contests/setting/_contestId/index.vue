@@ -26,7 +26,14 @@
             ></division-setting-list>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" outlined @click="divFormKey++;dialog = true">
+            <v-btn
+              color="primary"
+              outlined
+              @click="
+                divFormKey++;
+                dialog = true;
+              "
+            >
               階級を追加
             </v-btn>
           </v-card-actions>
@@ -44,13 +51,19 @@
   </v-container>
 </template>
 
-<script>
-import { defineComponent, ref, useMeta, useRoute } from "@nuxtjs/composition-api";
-import ContestForm from "~/components/contests/ContestForm.vue";
-import useContest from "~/composable/contests/useContest";
-import DivisionSettingList from "~/components/divisions/DivisionSettingList.vue";
-import DivisionForm from "~/components/divisions/DivisionForm.vue";
-import useDivision from "~/composable/divisions/useDivision";
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  useMeta,
+  useRoute,
+} from '@nuxtjs/composition-api';
+import ContestForm from '~/components/contests/ContestForm.vue';
+import useContest from '~/composable/contests/useContest';
+import DivisionSettingList from '~/components/divisions/DivisionSettingList.vue';
+import DivisionForm from '~/components/divisions/DivisionForm.vue';
+import useDivision from '~/composable/divisions/useDivision';
+import { Contest, Division } from '~/types/model';
 
 export default defineComponent({
   components: {
@@ -70,7 +83,7 @@ export default defineComponent({
     // update Contest
     const { updateContest } = useContest();
     const contestLoading = ref(false);
-    const saveContest = async (contest) => {
+    const saveContest = async (contest: Contest) => {
       contestLoading.value = true;
       const start = performance.now();
       await updateContest(contest.value);
@@ -88,7 +101,7 @@ export default defineComponent({
     const divFormKey = ref(0);
     const divListKey = ref(0);
 
-    const saveDivision = async (division) => {
+    const saveDivision = async (division: Division) => {
       const start = performance.now();
       dialog.value = false;
       await createDivision(contestId, division.value);
@@ -99,7 +112,6 @@ export default defineComponent({
       }, 1000 - t);
     };
 
-
     return {
       saveContest,
       contestId,
@@ -108,7 +120,7 @@ export default defineComponent({
       divFormKey,
       saveDivision,
       divisionLoading,
-      dialog
+      dialog,
     };
   },
   head: {},
