@@ -1,15 +1,24 @@
 import { Firestore } from "firebase/firestore";
-import { AbstractRepository } from "./abstractRepository";
-import { ContestCollectionKeys, ContestModel } from "~/models/contest";
-import { Contest, ModelConstructor } from "~/types/model";
-import { ContestRepository } from "~/types/repositories";
+import { Repository } from "./repository";
+import { Contest } from "~/models/contest";
+import { ModelConstructor } from "~/types/model";
 
-export class ContestRepositoryImp extends AbstractRepository<Contest, ContestCollectionKeys> implements ContestRepository {
+declare const ContestCollectionPathSym: unique symbol;
+
+export type ContestCollectionPath = string & { [ContestCollectionPathSym]: never; };
+
+export const isContestCollPath = (val: string): val is ContestCollectionPath => /contests/.test(val);
+
+export class ContestRepository extends Repository<Contest, ContestCollectionPath> {
     constructor(
         firestore: Firestore,
-        modelConstructor: ModelConstructor<Contest> = ContestModel,
+        modelConstructor: ModelConstructor<Contest> = Contest,
         collectionName: string = 'contests',
     ) {
         super(firestore, modelConstructor, collectionName);
+    }
+
+    static getCollectionPath(): ContestCollectionPath {
+        return 'contests' as ContestCollectionPath;
     }
 }

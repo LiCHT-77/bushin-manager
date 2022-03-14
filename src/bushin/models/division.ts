@@ -1,19 +1,16 @@
-import { BaseModel } from "./abstractModel";
-import { ContestType, Division, Rank } from "~/types/model";
-import { CollectionKeys } from "~/types/repositories";
+import { DocumentReference } from "firebase/firestore";
+import { Model } from "./model";
+import { ContestType, Rank } from "~/types/model";
 
-export interface DivisionCollectionKeys extends CollectionKeys {
-    contests: string;
-}
-
-export class DivisionModel extends BaseModel implements Division {
+export class Division extends Model {
     constructor(
         id: string = '',
+        ref: DocumentReference | null = null,
         public name: string = '',
         public ranks: Array<Rank> = [],
         public contestType: ContestType = '通常',
         public order: number = 0,
     ) {
-        super(id);
+        super(id, ref);
     }
 }

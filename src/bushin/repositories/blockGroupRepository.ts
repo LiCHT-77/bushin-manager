@@ -1,23 +1,28 @@
 import { doc, DocumentReference, Firestore, runTransaction } from "firebase/firestore";
-import { AbstractRepository } from "./abstractRepository";
-import { BlockGroupCollectionKeys, BlockGroupModel } from "~/models/blockGroup";
-import { BlockGroup, ModelConstructor } from "~/types/model";
-import { BlockGroupRepository } from "~/types/repositories";
+import { Repository } from "./repository";
+import { BlockGroup } from "~/models/blockGroup";
+import { ModelConstructor } from "~/types/model";
 
+declare const BlockGroupCollectionPathSym: unique symbol;
+export type BlockGroupCollectionPath = string & { [BlockGroupCollectionPathSym]: never; };
 
-export class BlockGroupRepositoryImp extends AbstractRepository<BlockGroup, BlockGroupCollectionKeys> implements BlockGroupRepository {
+export const isBlockGroupCollPath = (val: string): val is BlockGroupCollectionPath => /contests\/.*\/blockGroups/.test(val);
+
+export class BlockGroupRepository extends Repository<BlockGroup, BlockGroupCollectionPath> {
     constructor(
         firestore: Firestore,
-        modelConstructor: ModelConstructor<BlockGroup> = BlockGroupModel,
+        modelConstructor: ModelConstructor<BlockGroup> = BlockGroup,
         collectionName: string = 'blockGroups',
     ) {
         super(firestore, modelConstructor, collectionName);
     }
 
-    async updateOrders(collectionKeys: BlockGroupCollectionKeys, blockGroups: BlockGroup[]): Promise<void> {
+    static getCollectionPath(contestId: string): BlockGroupCollectionPath {
+        return `contests/${contestId}/blockGroups` as BlockGroupCollectionPath;
+    }
+
+    async updateOrders(collectionPath: BlockGroupCollectionPath, blockGroups: BlockGroup[]): Promise<void> {
         await runTransaction(this.firestore, async (transaction) => {
-            const collectionPath = this.getCollectionPath(collectionKeys);
-            
             const refOrders: { ref: DocumentReference, id: string, order: number; }[] = [];
             for (const [index, blockGroup] of blockGroups.entries()) {
                 const docRef = doc(this.firestore, collectionPath, blockGroup.id);
@@ -32,7 +37,7 @@ export class BlockGroupRepositoryImp extends AbstractRepository<BlockGroup, Bloc
                 });
             }
             for (const refOrder of refOrders) {
-                transaction.update(refOrder.ref, {order: refOrder.order});
+                transaction.update(refOrder.ref, { order: refOrder.order });
             }
         });
     }

@@ -1,6 +1,6 @@
 import { ref, useContext } from "@nuxtjs/composition-api";
-import { Contest } from "~/types/model";
-import { ContestRepository } from "~/types/repositories";
+import { Contest } from "~/models";
+import { ContestRepository } from "~/repositories";
 
 export default function useContests() {
     const { $reps } = useContext();
@@ -10,7 +10,8 @@ export default function useContests() {
     const contests = ref<Contest[]>([]);
 
     const getContestList = async () => {
-        contests.value = await contestRep.getList({});
+        const collectionPath = ContestRepository.getCollectionPath();
+        contests.value = await contestRep.getList(collectionPath);
     };
 
     return { contests, getContestList };

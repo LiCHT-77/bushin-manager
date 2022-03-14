@@ -1,19 +1,15 @@
-import { BaseModel } from "./abstractModel";
-import { BlockGroup } from "~/types/model";
-import { CollectionKeys } from "~/types/repositories";
+import { DocumentReference } from "firebase/firestore";
+import { Model } from "./model";
 
-export interface BlockGroupCollectionKeys extends CollectionKeys {
-    contests: string;
-    divisions: string;
-}
-
-export class BlockGroupModel extends BaseModel implements BlockGroup {
+export class BlockGroup extends Model {
     constructor(
         id: string = '',
+        ref: DocumentReference | null = null,
         public name: string = '',
         public isFinished: boolean = false,
         public order: number = 0,
+        public divisionRef: DocumentReference,
     ) {
-        super(id);
+        super(id, ref);
     }
 }

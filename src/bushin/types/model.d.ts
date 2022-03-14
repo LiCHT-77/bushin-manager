@@ -1,3 +1,5 @@
+import { DocumentReference } from "firebase/firestore";
+
 /**
  * Match format
  */
@@ -12,36 +14,10 @@ export type Rank = Ranks[number];
 
 export interface Model {
     readonly id: string;
+    readonly ref: DocumentReference | null;
     [key: string]: any;
 }
 
 export interface ModelConstructor<T extends Model> {
-    new(id: string): T;
-}
-
-
-export interface Contest extends Model {
-    name: string;
-    date: Date;
-    isPublish: boolean;
-}
-
-export interface Player extends Model {
-    name: string;
-    dojo: string;
-    age: number;
-    rank: Rank;
-}
-
-export interface Division extends Model {
-    name: string;
-    ranks: Array<Rank>;
-    contestType: ContestType;
-    order: number;
-}
-
-export interface BlockGroup extends Model {
-    name: string;
-    isFinished: boolean;
-    order: number
+    new(id: string, ref?: DocumentReference, ...args: any[]): T;
 }

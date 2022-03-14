@@ -1,16 +1,14 @@
-import { BaseModel } from "./abstractModel";
-import { Contest } from "~/types/model";
-import { CollectionKeys } from "~/types/repositories";
+import { DocumentReference } from "firebase/firestore";
+import { Model } from "./model";
 
-export interface ContestCollectionKeys extends CollectionKeys {}
-
-export class ContestModel extends BaseModel implements Contest {
+export class Contest extends Model {
     constructor(
         id: string = '',
+        ref: DocumentReference | null = null,
         public name: string = '',
         public date: Date = new Date(),
         public isPublish: boolean = false,
     ) {
-        super(id);
+        super(id, ref);
     }
 }

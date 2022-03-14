@@ -1,21 +1,15 @@
 import { ref, useContext } from "@nuxtjs/composition-api";
-import { PlayerCollectionKeys } from "~/models/player";
-import { Player } from "~/types/model";
-
+import { Player } from "~/models";
+import { PlayerRepository } from "~/repositories";
 
 export default function usePlayers() {
     const { $reps } = useContext();
     const playerRep = $reps.playerRep;
     const players = ref<Player[]>([]);
 
-    const getPlayerColKeys = (contestId: string): PlayerCollectionKeys => {
-        return {
-            contests: contestId
-        };
-    };
-
     const getPlayerList = async (contestId: string) => {
-        players.value = await playerRep.getList(getPlayerColKeys(contestId));
+        const collectionPath = PlayerRepository.getCollectionPath(contestId);
+        players.value = await playerRep.getList(collectionPath);
     };
 
     return {

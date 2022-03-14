@@ -1,6 +1,6 @@
 import { ref, useContext } from "@nuxtjs/composition-api";
-import { BlockGroupCollectionKeys } from "~/models/blockGroup";
-import { BlockGroup } from "~/types/model";
+import { BlockGroup } from "~/models";
+import { BlockGroupRepository } from "~/repositories";
 
 export default function useBlockGroup() {
     const {$reps} = useContext();
@@ -8,24 +8,19 @@ export default function useBlockGroup() {
 
     const blockGroup = ref<BlockGroup>(blockGroupRep.newModelInstance());
 
-    // TODO: とこかに集約すべき
-    const getBlockGroupColKeys = (contestId: string, divisionId: string): BlockGroupCollectionKeys => {
-        return {
-            contests: contestId,
-            divisions: divisionId
-        };
+    const getBlockGroup = async (contestId: string, blockGroupId: string) => {
+        const collectionPath = BlockGroupRepository.getCollectionPath(contestId);
+        blockGroup.value = await blockGroupRep.find(collectionPath, blockGroupId);
     };
 
-    const getBlockGroup = async (contestId: string, divisionId: string, blockGroupId: string) => {
-        blockGroup.value = await blockGroupRep.find(getBlockGroupColKeys(contestId, divisionId), blockGroupId);
+    const createBlockGroup = async (contestId: string, blockGroup: BlockGroup) => {
+        const collectionPath = BlockGroupRepository.getCollectionPath(contestId);
+        await blockGroupRep.add(collectionPath, blockGroup);
     };
 
-    const createBlockGroup = async (contestId: string, divisionId: string, blockGroup: BlockGroup) => {
-        await blockGroupRep.add(getBlockGroupColKeys(contestId, divisionId), blockGroup);
-    };
-
-    const updateBlockGroup = async (contestId: string, divisionId: string, blockGroup: BlockGroup) => {
-        await blockGroupRep.update(getBlockGroupColKeys(contestId, divisionId), blockGroup);
+    const updateBlockGroup = async (contestId: string, blockGroup: BlockGroup,) => {
+        const collectionPath = BlockGroupRepository.getCollectionPath(contestId);
+        await blockGroupRep.update(collectionPath, blockGroup);
     };
 
     return {

@@ -1,30 +1,34 @@
 import { ref, useContext } from '@nuxtjs/composition-api';
-import { orderBy } from 'firebase/firestore';
-import { BlockGroupCollectionKeys } from '~/models/blockGroup';
-import { BlockGroup } from '~/types/model';
-import { BlockGroupRepository } from '~/types/repositories';
+import { orderBy, QueryConstraint, where } from 'firebase/firestore';
+import { BlockGroup, Division } from '~/models';
+import { BlockGroupRepository } from '~/repositories';
 
 export default function useBlockGroups() {
     const { $reps } = useContext();
     const blockGroupRep: BlockGroupRepository = $reps.blockGroupRep;
     const blockGroups = ref<BlockGroup[]>([]);
 
-    const getBlockGroupColKeys = (contestId: string, divisionId: string): BlockGroupCollectionKeys => {
-        return {
-            contests: contestId,
-            divisions: divisionId
-        };
+    const getBlockGroupList = async (contestId: string, division?: Division) => {
+        const blockGroupColKeys = BlockGroupRepository.getCollectionPath(contestId);
+
+        const query: QueryConstraint[] = [];
+
+        if (division !== undefined) {
+            query.push(
+                where('division_ref', '==', division.ref)
+            );
+        }
+
+        query.push(
+            orderBy('order', 'asc')
+        );
+
+        blockGroups.value = await blockGroupRep.getList(blockGroupColKeys, query);
     };
 
-    const getBlockGroupList = async (contestId: string, divisionId: string) => {
-        const blockGroupColKeys = getBlockGroupColKeys(contestId, divisionId);
-        const sort = orderBy('order', 'asc');
-        blockGroups.value = await blockGroupRep.getList(blockGroupColKeys, [sort]);
-    };
-
-    const updateOrders = async (contestId: string, divisionId: string) => {
-        const blockGroupColKeys = getBlockGroupColKeys(contestId, divisionId);
-        await blockGroupRep.updateOrders(blockGroupColKeys, blockGroups.value);
+    const updateOrders = async (contestId: string, blockGroups: BlockGroup[]) => {
+        const blockGroupColKeys = BlockGroupRepository.getCollectionPath(contestId);
+        await blockGroupRep.updateOrders(blockGroupColKeys, blockGroups);
     };
 
     return {

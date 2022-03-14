@@ -1,9 +1,11 @@
-import { QueryDocumentSnapshot, SnapshotOptions, WithFieldValue, DocumentData, FirestoreDataConverter, Timestamp } from "firebase/firestore";
-import { Model, ModelConstructor } from "~/types/model";
+import { QueryDocumentSnapshot, SnapshotOptions, WithFieldValue, DocumentData, FirestoreDataConverter, Timestamp, DocumentReference } from "firebase/firestore";
+import { ModelConstructor } from "~/types/model";
 
-export abstract class BaseModel implements Model {
+export abstract class Model {
+    readonly [key: string]: any;
     constructor(
-        public readonly id: string
+        public readonly id: string,
+        public readonly ref: DocumentReference | null,
     ) { }
 
     static converter<U extends Model>(modelCtor: ModelConstructor<U>): FirestoreDataConverter<U> {
@@ -14,7 +16,7 @@ export abstract class BaseModel implements Model {
                 const model = new modelCtor(snapShot.id);
 
                 for (const key in model) {
-                    if (key === 'id') {
+                    if (key === 'id' || key === 'ref') {
                         continue;
                     }
 
@@ -27,11 +29,11 @@ export abstract class BaseModel implements Model {
                         Object.prototype.hasOwnProperty.call(model, key)
                     ) {
 
-                        if(data[snake] instanceof Timestamp) {
+                        if (data[snake] instanceof Timestamp) {
                             data[snake] = data[snake].toDate();
                         }
 
-                        if(typeof model[key] === typeof data[snake]) {
+                        if (typeof model[key] === typeof data[snake]) {
                             model[key] = data[snake];
                         } else {
                             throw new TypeError(`The type of property ${key} does not match.`);
@@ -47,15 +49,18 @@ export abstract class BaseModel implements Model {
                 const docData: { [key: string]: any; } = {};
 
                 for (const key in model) {
-                    if (key === 'id') {
+                    if (key === 'id' || key === 'ref') {
                         continue;
                     }
                     const snake = key.replace(/([A-Z])/g,
                         function (s) {
                             return '_' + s.charAt(0).toLowerCase();
                         });
+                    
 
-                    docData[snake] = model[key];
+                    if (Object.prototype.hasOwnProperty.call(model, key)) {
+                        docData[snake] = model[key];
+                    }
                 }
 
                 return docData;

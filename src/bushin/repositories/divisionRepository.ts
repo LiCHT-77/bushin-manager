@@ -1,23 +1,29 @@
 import { doc, DocumentReference, Firestore, runTransaction } from "firebase/firestore";
-import { AbstractRepository } from "./abstractRepository";
-import { DivisionCollectionKeys, DivisionModel } from "~/models/division";
-import { Division, ModelConstructor } from "~/types/model";
-import { DivisionRepository } from "~/types/repositories";
+import { Repository } from "./repository";
+import { Division } from "~/models/division";
+import { ModelConstructor } from "~/types/model";
 
+declare const DivisionCollectionPathSym: unique symbol;
 
-export class DivisionRepositoryImp extends AbstractRepository<Division, DivisionCollectionKeys> implements DivisionRepository {
+export type DivisionCollectionPath = string & { [DivisionCollectionPathSym]: never; };
+
+export const isDivisionCollPath = (val: string): val is DivisionCollectionPath => /contests\/.*\/divisions/.test(val);
+
+export class DivisionRepository extends Repository<Division, DivisionCollectionPath> {
     constructor(
         firestore: Firestore,
-        modelConstructor: ModelConstructor<Division> = DivisionModel,
+        modelConstructor: ModelConstructor<Division> = Division,
         collectionName: string = 'divisions',
     ) {
         super(firestore, modelConstructor, collectionName);
     }
 
-    async updateOrders(collectionKeys: DivisionCollectionKeys, divisions: Division[]): Promise<void> {
+    static getCollectionPath(contestId: string): DivisionCollectionPath {
+        return `contests/${contestId}/divisions` as DivisionCollectionPath;
+    }
+
+    async updateOrders(collectionPath: DivisionCollectionPath, divisions: Division[]): Promise<void> {
         await runTransaction(this.firestore, async (transaction) => {
-            const collectionPath = this.getCollectionPath(collectionKeys);
-            
             const refOrders: { ref: DocumentReference, id: string, order: number; }[] = [];
             for (const [index, division] of divisions.entries()) {
                 const docRef = doc(this.firestore, collectionPath, division.id);
@@ -32,7 +38,7 @@ export class DivisionRepositoryImp extends AbstractRepository<Division, Division
                 });
             }
             for (const refOrder of refOrders) {
-                transaction.update(refOrder.ref, {order: refOrder.order});
+                transaction.update(refOrder.ref, { order: refOrder.order });
             }
         });
     }

@@ -1,19 +1,16 @@
-import { BaseModel } from "./abstractModel";
-import { Player, Rank } from "~/types/model";
-import { CollectionKeys } from "~/types/repositories";
+import { DocumentReference } from "firebase/firestore";
+import { Model } from "./model";
+import { Rank } from "~/types/model";
 
-export interface PlayerCollectionKeys extends CollectionKeys {
-    contests: string
-}
-
-export class PlayerModel extends BaseModel implements Player {
+export class Player extends Model {
     constructor(
         id: string = '',
+        ref: DocumentReference | null = null,
         public name: string = '',
         public dojo: string = '',
         public age: number = 0,
         public rank: Rank = '8級',
     ) {
-        super(id);
+        super(id, ref);
     }
 }

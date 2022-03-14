@@ -1,9 +1,8 @@
 import { Plugin } from '@nuxt/types';
-import { BlockGroupRepositoryImp } from '~/repositories/blockGroupRepository';
-import { ContestRepositoryImp } from '~/repositories/contestRepository';
-import { DivisionRepositoryImp } from '~/repositories/divisionRepository';
-import { PlayerRepositoryImp } from '~/repositories/playerRepository';
-import { BlockGroupRepository, ContestRepository, DivisionRepository, PlayerRepository } from '~/types/repositories';
+import { BlockGroupRepository } from '~/repositories/blockGroupRepository';
+import { ContestRepository } from '~/repositories/contestRepository';
+import { DivisionRepository } from '~/repositories/divisionRepository';
+import { PlayerRepository } from '~/repositories/playerRepository';
 
 interface Repositories {
     contestRep: ContestRepository;
@@ -21,10 +20,10 @@ declare module '@nuxt/types' {
 const repositoriesPlugin: Plugin = (context) => {
     // Init repositories
     const firestore = context.$firebase.firestore;
-    const contestRep = new ContestRepositoryImp(firestore);
-    const playerRep = new PlayerRepositoryImp(firestore);
-    const divisionRep = new DivisionRepositoryImp(firestore);
-    const blockGroupRep = new BlockGroupRepositoryImp(firestore);
+    const contestRep = new ContestRepository(firestore);
+    const playerRep = new PlayerRepository(firestore);
+    const divisionRep = new DivisionRepository(firestore);
+    const blockGroupRep = new BlockGroupRepository(firestore);
 
     // Create Repositories object
     const reps: Repositories = {

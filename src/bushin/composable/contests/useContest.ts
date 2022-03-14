@@ -1,6 +1,6 @@
 import { ref, useContext } from "@nuxtjs/composition-api";
-import { Contest } from "~/types/model";
-
+import { Contest } from "~/models";
+import { ContestRepository } from "~/repositories";
 
 export default function useContest() {
     const {$reps} = useContext();
@@ -9,15 +9,18 @@ export default function useContest() {
     const contest = ref<Contest>(contestRep.newModelInstance());
 
     const getContest = async (contestId: string) => {
-        contest.value = await contestRep.find({}, contestId);
+        const collectionPath = ContestRepository.getCollectionPath();
+        contest.value = await contestRep.find(collectionPath, contestId);
     };
 
     const createContest = async (contest: Contest) => {
-        await contestRep.add({}, contest);
+        const collectionPath = ContestRepository.getCollectionPath();
+        await contestRep.add(collectionPath, contest);
     };
 
     const updateContest = async (contest: Contest) => {
-        await contestRep.update({}, contest);
+        const collectionPath = ContestRepository.getCollectionPath();
+        await contestRep.update(collectionPath, contest);
     };
 
 

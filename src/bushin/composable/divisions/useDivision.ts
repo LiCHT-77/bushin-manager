@@ -1,6 +1,6 @@
 import { ref, useContext } from "@nuxtjs/composition-api";
-import { DivisionCollectionKeys } from "~/models/division";
-import { Division } from "~/types/model";
+import { Division } from "~/models";
+import { DivisionRepository } from "~/repositories";
 
 export default function useDivision() {
     const {$reps} = useContext();
@@ -8,22 +8,19 @@ export default function useDivision() {
 
     const division = ref<Division>(divisionRep.newModelInstance());
 
-    const getDivisionColKeys = (contestId: string): DivisionCollectionKeys => {
-        return {
-            contests: contestId
-        };
-    };
-
     const getDivision = async (contestId: string, divisionId: string) => {
-        division.value = await divisionRep.find(getDivisionColKeys(contestId), divisionId);
+        const collectionPath = DivisionRepository.getCollectionPath(contestId);
+        division.value = await divisionRep.find(collectionPath, divisionId);
     };
 
     const createDivision = async (contestId: string, division: Division) => {
-        await divisionRep.add(getDivisionColKeys(contestId), division);
+        const collectionPath = DivisionRepository.getCollectionPath(contestId);
+        await divisionRep.add(collectionPath, division);
     };
 
     const updateDivision = async (contestId: string, division: Division) => {
-        await divisionRep.update(getDivisionColKeys(contestId), division);
+        const collectionPath = DivisionRepository.getCollectionPath(contestId);
+        await divisionRep.update(collectionPath, division);
     };
 
     return {
