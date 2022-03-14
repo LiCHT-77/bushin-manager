@@ -1,30 +1,25 @@
 <template>
   <v-container fluid class="px-16">
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="8" md="6">
-        <v-card>
-          <v-card-title class="headline"> ページリスト </v-card-title>
-          <v-card-text>
-            <v-list>
-              <v-list-item-group>
-                <v-list-item
-                  v-for="page in pages"
-                  :key="page.title"
-                  nuxt
-                  :to="page.to"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>{{ page.title }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="primary" nuxt to="/inspire"> Continue </v-btn>
-          </v-card-actions>
-        </v-card>
+    <v-row>
+      <v-col cols="12">
+        <h1>大会一覧</h1>
+      </v-col>
+    </v-row>
+    <v-row class="mt-0">
+      <v-col cols="12" class="d-flex align-center">
+        <v-btn
+          outlined
+          small
+          color="primary"
+          :to="{ name: 'setting-create' }"
+          nuxt
+          >新大会の作成<v-icon>mdi-plus</v-icon></v-btn
+        >
+      </v-col>
+    </v-row>
+    <v-row class="mt-0">
+      <v-col cols="12">
+        <contest-list></contest-list>
       </v-col>
     </v-row>
   </v-container>
@@ -32,22 +27,20 @@
 
 <script lang="ts">
 import { defineComponent, useMeta } from '@nuxtjs/composition-api';
+import ContestList from '~/components/contests/ContestList.vue';
 export default defineComponent({
-  name: 'IndexPage',
+  components: {
+    ContestList,
+  },
   setup() {
     // meta
     const { title } = useMeta();
-    title.value = 'Top';
-
-    // indexページから遷移するためのリンク
-    const pages = [
-      {
-        title: '大会',
-        to: { name: 'contests' },
-      },
-    ];
-    return { pages };
+    title.value = '大会一覧';
+    return {};
   },
   head: {},
 });
 </script>
+
+<style>
+</style>
