@@ -4,12 +4,12 @@
       <v-card-title>階級設定</v-card-title>
       <v-card-text>
         <v-text-field
-          v-model="division.name"
+          v-model="divisionComputed.name"
           label="階級名"
           :rules="validations.name"
         ></v-text-field>
         <v-select
-          v-model="division.ranks"
+          v-model="divisionComputed.ranks"
           :items="ranks"
           :rules="validations.ranks"
           attach
@@ -18,7 +18,7 @@
           multiple
         ></v-select>
         <v-select
-          v-model="division.contestType"
+          v-model="divisionComputed.contestType"
           :items="contestTypes"
           :rules="validations.contestType"
           label="試合形式"
@@ -30,6 +30,7 @@
           :loading="loading"
           :disabled="loading"
           @click="save()"
+          
         >
           保存
         </v-btn>
@@ -38,8 +39,8 @@
   </v-card>
 </template>
 <script lang="ts">
-import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
-import useDivision from '~/composable/divisions/useDivision';
+import { computed, defineComponent, ref, toRefs } from '@nuxtjs/composition-api';
+import { Division } from '~/models';
 
 export interface VForm {
   validate: () => boolean;
@@ -49,20 +50,16 @@ export interface VForm {
 
 export default defineComponent({
   props: {
-    contestId: {
-      type: String,
-      required: true,
-    },
-    divisionId: {
-      type: String,
-      default: '',
+    division: {
+      type: Object as () => Division,
+      default: new Division(),
     },
     loading: {
       type: Boolean,
       default: false,
     },
   },
-  setup({ contestId, divisionId }, { emit }) {
+  setup(props, { emit }) {
     // Division setup
     const ranks = [
       '8級',
@@ -79,12 +76,12 @@ export default defineComponent({
       '4段',
     ];
     const contestTypes = ['通常', '3形合計'];
-    const { division, getDivision } = useDivision();
-    if (contestId !== '' && divisionId !== '') {
-      useFetch(async () => {
-        await getDivision(contestId, divisionId);
-      });
-    }
+
+    const {division} = toRefs(props);
+    const divisionComputed = computed({
+      get: () => division.value,
+      set: (val) => emit('update:division', val),
+    });
 
     // validation rules
     const validations = {
@@ -105,13 +102,13 @@ export default defineComponent({
     const divisionForm = ref<VForm>();
     const save = () => {
       if (divisionForm.value !== undefined && divisionForm.value.validate()) {
-        emit('save', division);
+        emit('save');
       }
     };
 
     return {
       divisionForm,
-      division,
+      divisionComputed,
       ranks,
       contestTypes,
       validations,

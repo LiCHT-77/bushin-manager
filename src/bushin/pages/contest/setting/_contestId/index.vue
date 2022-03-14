@@ -59,11 +59,10 @@ import {
   useRoute,
 } from '@nuxtjs/composition-api';
 import ContestForm from '~/components/contests/ContestForm.vue';
-import useContest from '~/composable/contests/useContest';
 import DivisionSettingList from '~/components/divisions/DivisionSettingList.vue';
 import DivisionForm from '~/components/divisions/DivisionForm.vue';
-import useDivision from '~/composable/divisions/useDivision';
-import { Contest, Division } from '~/types/model';
+import { useContest, useDivision } from '~/composable';
+import { Contest, Division } from '~/models';
 
 export default defineComponent({
   components: {

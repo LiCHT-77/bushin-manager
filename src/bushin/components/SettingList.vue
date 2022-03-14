@@ -42,7 +42,6 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['update:items', 'flipped'],
   setup(props, { emit }) {
     const { items } = toRefs(props);
     const itemComputed = computed({

@@ -42,9 +42,8 @@ import {
 } from '@nuxtjs/composition-api';
 import PlayerList from '~/components/players/PlayerList.vue';
 import PlayerForm from '~/components/players/PlayerForm.vue';
-import usePlayers from '~/composable/players/usePlayers';
-import usePlayer from '~/composable/players/usePlayer';
-import { Player } from '~/types/model';
+import { usePlayers, usePlayer } from '~/composable';
+import { Player } from '~/models';
 
 export default defineComponent({
   components: {

@@ -60,10 +60,9 @@ import {
 import DivisionForm from '~/components/divisions/DivisionForm.vue';
 import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
 import BlockGroupSettingList from '~/components/blockGroups/BlockGroupSettingList.vue';
-import useDivision from '~/composable/divisions/useDivision';
-import useBlockGroup from '~/composable/blockGroups/useBlockGroup';
 import SettingBreadcrumbs from '~/components/SettingBreadcrumbs.vue';
-import { BlockGroup, Division } from '~/types/model';
+import { useDivision, useBlockGroup } from '~/composable';
+import { Division, BlockGroup } from '~/models';
 
 export default defineComponent({
   components: {
@@ -112,7 +111,7 @@ export default defineComponent({
     const saveBlockGroup = async (blockGroup: BlockGroup) => {
       const start = performance.now();
       bgDialog.value = false;
-      await createBlockGroup(contestId, divisionId, blockGroup.value);
+      await createBlockGroup(contestId, blockGroup.value);
       const t = performance.now() - start;
       setTimeout(() => {
         bgLoading.value = false;

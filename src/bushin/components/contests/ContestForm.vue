@@ -5,7 +5,7 @@
       <v-card-text>
         <p>{{ contest }}</p>
         <v-text-field
-          v-model="contest.name"
+          v-model="contestComputed.name"
           label="大会名"
           :rules="validations.name"
         ></v-text-field>
@@ -37,7 +37,7 @@
         </v-menu>
         <v-subheader class="pl-0">公開設定</v-subheader>
         <v-switch
-          v-model="contest.isPublish"
+          v-model="contestComputed.isPublish"
           :label="isPublishLabel"
           class="mt-0"
         ></v-switch>
@@ -62,10 +62,10 @@ import {
   computed,
   defineComponent,
   ref,
+  toRefs,
   useContext,
-  useFetch,
 } from '@nuxtjs/composition-api';
-import useContest from '~/composable/contests/useContest';
+import { Contest } from '~/models';
 
 export interface VForm {
   validate: () => boolean;
@@ -75,23 +75,25 @@ export interface VForm {
 
 export default defineComponent({
   props: {
-    contestId: {
-      type: String,
-      default: '',
-    },
     loading: {
       type: Boolean,
       default: false,
     },
+    contest: {
+      type: Object as () => Contest,
+      default: new Contest(),
+    },
   },
-  setup({ contestId }, { emit }) {
+  setup(props, { emit }) {
     // setup `Contest`
-    const { contest, getContest } = useContest();
-    if (contestId !== '') {
-      useFetch(async () => {
-        await getContest(contestId);
-      });
-    }
+    const { contest } = toRefs(props);
+
+    const contestComputed = computed({
+      get: () => contest.value,
+      set: (val) => {
+        emit('update:contest', val);
+      },
+    });
 
     // format Date object
     const { $dateFns } = useContext();
@@ -121,7 +123,7 @@ export default defineComponent({
     const contestForm = ref<VForm>();
     const save = () => {
       if (contestForm.value !== undefined && contestForm.value.validate()) {
-        emit('save', contest);
+        emit('save');
       }
     };
 
@@ -129,7 +131,7 @@ export default defineComponent({
     const menu = false;
 
     return {
-      contest,
+      contestComputed,
       contestDate,
       isPublishLabel,
       validations,

@@ -1,6 +1,6 @@
 <template>
   <setting-list
-    :items.sync="divisions"
+    :items.sync="divisionsComputed"
     draggable="division"
     @flipped="onFlippedDivision($event)"
   >
@@ -30,9 +30,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useFetch } from '@nuxtjs/composition-api';
-import useDivisions from '~/composable/divisions/useDivisions';
+import { computed, defineComponent, toRefs } from '@nuxtjs/composition-api';
 import SettingList from '~/components/SettingList.vue';
+import { useDivisions } from '~/composable';
+import { Division } from '~/models';
 
 export default defineComponent({
   components: {
@@ -43,21 +44,28 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    divisions: {
+      type: Array as () => Division[],
+      required: true,
+    },
   },
-  setup({ contestId }) {
-    const { divisions, getDivisionList, updateOrders } = useDivisions();
-    if (contestId !== '') {
-      useFetch(async () => {
-        await getDivisionList(contestId);
-      });
-    }
+  setup(props, { emit }) {
+    const { contestId, divisions } = toRefs(props);
+    const { updateOrders } = useDivisions();
 
     // Sort Division
     const onFlippedDivision = async () => {
-      await updateOrders(contestId);
+      await updateOrders(contestId.value, divisions.value);
     };
 
-    return { divisions, onFlippedDivision };
+    const divisionsComputed = computed({
+      get: () => divisions.value,
+      set: (val) => {
+        emit('update:divisions', val);
+      },
+    });
+
+    return { onFlippedDivision, divisionsComputed };
   },
 });
 </script>

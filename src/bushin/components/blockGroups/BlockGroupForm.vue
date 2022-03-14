@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
-import useBlockGroup from '~/composable/blockGroups/useBlockGroup';
+import { useBlockGroup } from '~/composable';
 
 export interface VForm {
   validate: () => boolean;
@@ -56,7 +56,7 @@ export default defineComponent({
     const { blockGroup, getBlockGroup } = useBlockGroup();
     if (contestId !== '' && divisionId !== '' && blockGroupId !== '') {
       useFetch(async () => {
-        await getBlockGroup(contestId, divisionId, blockGroupId);
+        await getBlockGroup(contestId, blockGroupId);
       });
     }
 

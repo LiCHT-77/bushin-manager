@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, useFetch } from '@nuxtjs/composition-api';
-import useBlockGroups from '~/composable/blockGroups/useBlockGroups';
+import { useBlockGroups } from '~/composable';
 import SettingList from '~/components/SettingList.vue';
 
 export default defineComponent({
@@ -51,13 +51,13 @@ export default defineComponent({
     const { blockGroups, getBlockGroupList, updateOrders } = useBlockGroups();
     if (contestId !== '' && divisionId !== '') {
       useFetch(async () => {
-        await getBlockGroupList(contestId, divisionId);
+        await getBlockGroupList(contestId);
       });
     }
 
     // Sort Division
     const onFlippedBlockGroup = async () => {
-      await updateOrders(contestId, divisionId);
+      await updateOrders(contestId, []);
     };
 
     return { blockGroups, onFlippedBlockGroup };

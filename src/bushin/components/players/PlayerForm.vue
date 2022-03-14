@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
-import usePlayer from '~/composable/players/usePlayer';
+import { usePlayer } from '~/composable';
 
 export interface VForm {
   validate: () => boolean;

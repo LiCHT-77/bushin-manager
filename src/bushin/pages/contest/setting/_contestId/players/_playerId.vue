@@ -26,8 +26,8 @@ import {
   useRoute,
 } from '@nuxtjs/composition-api';
 import PlayerForm from '~/components/players/PlayerForm.vue';
-import usePlayer from '~/composable/players/usePlayer';
-import { Player } from '~/types/model';
+import { usePlayer } from '~/composable';
+import { Player } from '~/models';
 
 export default defineComponent({
   components: {

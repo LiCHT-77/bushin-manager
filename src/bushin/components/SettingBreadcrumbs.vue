@@ -16,23 +16,23 @@
 <script lang="ts">
 import { defineComponent, useRoute } from '@nuxtjs/composition-api';
 
-export interface routeInfo {
+interface routeInfo {
   parents: Array<string>;
   params: Array<string>;
   text: string;
   [key: string]: any;
 }
 
-export interface routeInfos {
+interface routeInfos {
   [key: string]: routeInfo;
 }
 
-export interface routeObj {
+interface routeObj {
   name: string;
   params?: object;
 }
 
-export interface linkItem {
+interface linkItem {
   link: routeObj;
   text: string;
   disabled: boolean;
