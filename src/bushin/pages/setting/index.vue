@@ -60,6 +60,7 @@
 <script lang="ts">
 import {
   defineComponent,
+  inject,
   ref,
   useContext,
   useFetch,
@@ -69,7 +70,7 @@ import {
 import ContestForm from '~/components/contests/ContestForm.vue';
 import DivisionSettingList from '~/components/divisions/DivisionSettingList.vue';
 import DivisionForm from '~/components/divisions/DivisionForm.vue';
-import { useContest, useDivision, useDivisions } from '~/composable';
+import { snackbarStateKey, useContest, useDivision, useDivisions, useSnackbarState } from '~/composable';
 
 export default defineComponent({
   components: {
@@ -83,6 +84,7 @@ export default defineComponent({
     title.value = '大会編集';
 
     // get contest id
+    const snackbar = inject(snackbarStateKey, useSnackbarState());
     const route = useRoute();
     const { contest, getContest, updateContest } = useContest();
     const { divisions, getDivisionList } = useDivisions();
@@ -113,7 +115,13 @@ export default defineComponent({
       contestLoading.value = true;
       const start = performance.now();
 
-      await updateContest(contest.value);
+      await updateContest(contest.value).catch((err) => {
+        snackbar.setSnackbar({
+          text: '大会情報の保存に失敗しました。',
+          color: 'error'
+        });
+        throw err;
+      });
 
       const t = performance.now() - start;
       setTimeout(() => {
@@ -130,7 +138,13 @@ export default defineComponent({
       const start = performance.now();
       dialog.value = false;
 
-      await createDivision(contestId, division.value);
+      await createDivision(contestId, division.value).catch((err) => {
+        snackbar.setSnackbar({
+          text: '階級情報の保存に失敗しました。',
+          color: 'error'
+        });
+        throw err;
+      });
 
       // set new Division instance
       division.value = $reps.divisionRep.newModelInstance();

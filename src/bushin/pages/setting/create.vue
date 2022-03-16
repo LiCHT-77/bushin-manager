@@ -12,9 +12,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useMeta, useRouter } from '@nuxtjs/composition-api';
+import { defineComponent, inject, useMeta, useRouter } from '@nuxtjs/composition-api';
 import ContestForm from '~/components/contests/ContestForm.vue';
-import { useContest } from '~/composable';
+import { snackbarStateKey, useContest, useSnackbarState } from '~/composable';
 
 export default defineComponent({
   components: {
@@ -26,10 +26,17 @@ export default defineComponent({
     title.value = '大会作成';
 
     // create new Contest
+    const snackbar = inject(snackbarStateKey, useSnackbarState());
     const { contest, createContest } = useContest();
     const router = useRouter();
     const saveContest = async () => {
-      await createContest(contest.value);
+      await createContest(contest.value).catch((err) => {
+        snackbar.setSnackbar({
+          text: '大会情報の保存に失敗しました。',
+          color: 'error'
+        });
+        throw err;
+      });
       router.push({ name: 'index' });
     };
 

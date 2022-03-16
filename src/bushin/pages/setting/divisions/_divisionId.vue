@@ -48,6 +48,7 @@
 <script lang="ts">
 import {
   defineComponent,
+  inject,
   ref,
   useContext,
   useFetch,
@@ -57,7 +58,7 @@ import {
 import DivisionForm from '~/components/divisions/DivisionForm.vue';
 import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
 import BlockGroupSettingList from '~/components/blockGroups/BlockGroupSettingList.vue';
-import { useDivision, useBlockGroup, useBlockGroups } from '~/composable';
+import { useDivision, useBlockGroup, useBlockGroups, snackbarStateKey, useSnackbarState } from '~/composable';
 import { Division } from '~/models';
 
 export default defineComponent({
@@ -72,6 +73,7 @@ export default defineComponent({
     title.value = '階級編集';
 
     // setup
+    const snackbar = inject(snackbarStateKey, useSnackbarState());
     const { error, $reps } = useContext();
     const route = useRoute();
     const contestId = route.value.query.contestId;
@@ -102,7 +104,13 @@ export default defineComponent({
       divisionLoading.value = true;
       const start = performance.now();
 
-      await updateDivision(contestId, division.value);
+      await updateDivision(contestId, division.value).catch((err) => {
+        snackbar.setSnackbar({
+          text: '階級情報の保存に失敗しました。',
+          color: 'error'
+        });
+        throw err;
+      });
 
       const t = performance.now() - start;
       setTimeout(() => {
@@ -123,7 +131,13 @@ export default defineComponent({
         throw new Error("ref of 'division' is not found");
       }
       blockGroup.value.divisionRef = division.value.ref;
-      await createBlockGroup(contestId, blockGroup.value);
+      await createBlockGroup(contestId, blockGroup.value).catch((err) => {
+        snackbar.setSnackbar({
+          text: 'ラウンド情報の保存に失敗しました。',
+          color: 'error'
+        });
+        throw err;
+      });
 
       // set new BlockGroup instance
       blockGroup.value = $reps.blockGroupRep.newModelInstance();

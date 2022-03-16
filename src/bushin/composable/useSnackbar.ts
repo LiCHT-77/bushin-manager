@@ -15,9 +15,7 @@ export const useSnackbarState = () => {
         if (val.text !== undefined) {
             state.text = val.text;
         }
-        if (val.active !== undefined) {
-            state.active = val.active;
-        }
+        state.active = true;
     };
 
     return {

@@ -19,6 +19,7 @@
 <script lang="ts">
 import {
   defineComponent,
+  inject,
   ref,
   useContext,
   useFetch,
@@ -26,7 +27,7 @@ import {
   useRoute,
 } from '@nuxtjs/composition-api';
 import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
-import { useBlockGroup } from '~/composable';
+import { snackbarStateKey, useBlockGroup, useSnackbarState } from '~/composable';
 
 export default defineComponent({
   components: {
@@ -38,6 +39,7 @@ export default defineComponent({
     title.value = 'ラウンド編集';
 
     // setup
+    const snackbar = inject(snackbarStateKey, useSnackbarState());
     const { error } = useContext();
     const route = useRoute();
     const contestId = route.value.query.contestId;
@@ -49,7 +51,13 @@ export default defineComponent({
     
     const {blockGroup, getBlockGroup} = useBlockGroup();
     useFetch(async () => {
-      await getBlockGroup(contestId, blockGroupId);
+      await getBlockGroup(contestId, blockGroupId).catch((err) => {
+        snackbar.setSnackbar({
+          text: 'ラウンド情報の保存に失敗しました。',
+          color: 'error'
+        });
+        throw err;
+      });
     });
 
     const bgLoading = ref(false);

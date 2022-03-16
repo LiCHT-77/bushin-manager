@@ -33,6 +33,7 @@
 <script lang="ts">
 import {
   defineComponent,
+  inject,
   ref,
   useContext,
   useFetch,
@@ -42,7 +43,7 @@ import {
 } from '@nuxtjs/composition-api';
 import PlayerList from '~/components/players/PlayerList.vue';
 import PlayerForm from '~/components/players/PlayerForm.vue';
-import { usePlayers, usePlayer } from '~/composable';
+import { usePlayers, usePlayer, snackbarStateKey, useSnackbarState } from '~/composable';
 
 export default defineComponent({
   components: {
@@ -73,11 +74,19 @@ export default defineComponent({
     const { createPlayer } = usePlayer();
     const playerLoading = ref(false);
     const dialog = ref(false);
+    const state = inject(snackbarStateKey, useSnackbarState());
     const savePlayer = async () => {
       const start = performance.now();
       dialog.value = false;
 
-      await createPlayer(contestId, player.value);
+      await createPlayer(contestId, player.value).catch((err) => {
+        state.setSnackbar({
+          text: '選手作成を失敗しました。',
+          color: 'error',
+        });
+
+        throw err;
+      });
 
       const t = performance.now() - start;
       setTimeout(() => {
