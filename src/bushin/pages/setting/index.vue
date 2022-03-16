@@ -26,7 +26,9 @@
             ></division-setting-list>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" outlined @click="dialog=true"> 階級を追加 </v-btn>
+            <v-btn color="primary" outlined @click="dialog = true">
+              階級を追加
+            </v-btn>
           </v-card-actions>
         </v-card>
         <v-dialog v-model="dialog" width="500">
@@ -49,7 +51,6 @@ import {
   useFetch,
   useMeta,
   useRoute,
-  useRouter,
 } from '@nuxtjs/composition-api';
 import ContestForm from '~/components/contests/ContestForm.vue';
 import DivisionSettingList from '~/components/divisions/DivisionSettingList.vue';
@@ -69,25 +70,27 @@ export default defineComponent({
 
     // get contest id
     const route = useRoute();
-    const router = useRouter();
-    const contestId = route.value.query.contestId;
-
     const { contest, getContest, updateContest } = useContest();
     const { divisions, getDivisionList } = useDivisions();
+    const { $reps, error } = useContext();
 
     // get Contest an Divisions
+    // get contestId from route query
+    const contestId = route.value.query.contestId;
+    if (typeof contestId !== 'string') {
+      error({ statusCode: 404 });
+      throw new Error("query parameter 'contestId' not found");
+    }
+
     useFetch(async () => {
-      if (typeof contestId === 'string') {
-        // TODO: アラート表示したい
-        await getContest(contestId).catch(() => {
-          router.push({ name: 'index' });
-        });
-        await getDivisionList(contestId).catch(() => {
-          router.push({ name: 'index' });
-        });
-      } else {
-        router.push({ name: 'index' });
-      }
+      await getContest(contestId).catch((err) => {
+        error({ statusCode: 404 });
+        throw err;
+      });
+      await getDivisionList(contestId).catch((err) => {
+        error({ statusCode: 404 });
+        throw err;
+      });
     });
 
     // update Contest
@@ -108,37 +111,33 @@ export default defineComponent({
     const { division, createDivision } = useDivision();
     const dialog = ref(false);
     const divisionLoading = ref(false);
-    const {$reps} = useContext();
 
     const saveDivision = async () => {
       const start = performance.now();
       dialog.value = false;
 
-      if (typeof contestId === 'string') {
-        await createDivision(contestId, division.value);
-      }
+      await createDivision(contestId, division.value);
 
       // set new Division instance
       division.value = $reps.divisionRep.newModelInstance();
-      
+
       const t = performance.now() - start;
       setTimeout(() => {
         divisionLoading.value = false;
       }, 1000 - t);
 
       // reload Divisions
-      if (typeof contestId === 'string') {
-        await getDivisionList(contestId).catch(() => {
-          router.push({ name: 'index' });
-        });
-      }
+      await getDivisionList(contestId).catch((err) => {
+        error({ statusCode: 404 });
+        throw err;
+      });
     };
 
     return {
-      saveContest,
       contestId,
       contest,
       contestLoading,
+      saveContest,
       divisions,
       division,
       dialog,

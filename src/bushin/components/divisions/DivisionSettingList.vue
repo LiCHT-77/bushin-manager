@@ -18,8 +18,9 @@
       <v-btn
         icon
         :to="{
-          name: 'contests-setting-contestId-divisionId',
-          params: { contestId: contestId, divisionId: item.id },
+          name: 'setting-divisions-divisionId',
+          params: { divisionId: item.id },
+          query: { contestId: contestId },
         }"
         nuxt
       >

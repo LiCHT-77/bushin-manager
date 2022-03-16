@@ -13,7 +13,7 @@ export abstract class Model {
             fromFirestore(snapShot: QueryDocumentSnapshot, _options: SnapshotOptions): U {
                 const data = snapShot.data();
 
-                const model = new modelCtor(snapShot.id);
+                const model = new modelCtor(snapShot.id, snapShot.ref);
 
                 for (const key in model) {
                     if (key === 'id' || key === 'ref') {
@@ -29,14 +29,20 @@ export abstract class Model {
                         Object.prototype.hasOwnProperty.call(model, key)
                     ) {
 
+                        if(data[snake] instanceof DocumentReference) {
+                            model[key] = data[snake];
+                            continue;
+                        }
+
                         if (data[snake] instanceof Timestamp) {
                             data[snake] = data[snake].toDate();
                         }
 
+
                         if (typeof model[key] === typeof data[snake]) {
                             model[key] = data[snake];
                         } else {
-                            throw new TypeError(`The type of property ${key} does not match.`);
+                            throw new TypeError(`The type of property ${key} does not match. expected ${typeof model[key]} but give ${typeof data[snake]}`);
                         }
                     } else {
                         throw new Error(`Property ${key} does not exist in the acquired data.`);
@@ -56,7 +62,7 @@ export abstract class Model {
                         function (s) {
                             return '_' + s.charAt(0).toLowerCase();
                         });
-                    
+
 
                     if (Object.prototype.hasOwnProperty.call(model, key)) {
                         docData[snake] = model[key];
