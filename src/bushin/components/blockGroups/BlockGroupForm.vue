@@ -4,7 +4,7 @@
       <v-card-title>ラウンド設定</v-card-title>
       <v-card-text>
         <v-text-field
-          v-model="blockGroup.name"
+          v-model="blockGroupComputed.name"
           label="ラウンド名"
           :rules="validations.name"
         ></v-text-field>
@@ -24,8 +24,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
-import { useBlockGroup } from '~/composable';
+import { computed, defineComponent, ref, toRefs } from '@nuxtjs/composition-api';
+import { BlockGroup } from '~/models';
 
 export interface VForm {
   validate: () => boolean;
@@ -35,30 +35,21 @@ export interface VForm {
 
 export default defineComponent({
   props: {
-    contestId: {
-      type: String,
+    blockGroup: {
+      type: Object as () => BlockGroup,
       required: true,
-    },
-    divisionId: {
-      type: String,
-      required: true,
-    },
-    blockGroupId: {
-      type: String,
-      default: '',
     },
     loading: {
       type: Boolean,
       default: false,
     },
   },
-  setup({ contestId, divisionId, blockGroupId }, { emit }) {
-    const { blockGroup, getBlockGroup } = useBlockGroup();
-    if (contestId !== '' && divisionId !== '' && blockGroupId !== '') {
-      useFetch(async () => {
-        await getBlockGroup(contestId, blockGroupId);
-      });
-    }
+  setup(props, { emit }) {
+    const {blockGroup} = toRefs(props);
+    const blockGroupComputed = computed({
+      get: () => blockGroup.value,
+      set: (val) => emit('update:blockGroup', val),
+    });
 
     // validation rules
     const validations = {
@@ -75,11 +66,11 @@ export default defineComponent({
         blockGroupForm.value !== undefined &&
         blockGroupForm.value.validate()
       ) {
-        emit('save', blockGroup);
+        emit('save');
       }
     };
     return {
-      blockGroup,
+      blockGroupComputed,
       validations,
       blockGroupForm,
       save,

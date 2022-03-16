@@ -1,6 +1,6 @@
 <template>
   <setting-list
-    :items.sync="blockGroups"
+    :items.sync="blockGroupsComputed"
     draggable="block-group"
     @flipped="onFlippedBlockGroup($event)"
   >
@@ -13,12 +13,9 @@
       <v-btn
         icon
         :to="{
-          name: 'contests-setting-contestId-divisionId-blockGroupId',
-          params: {
-            contestId: contestId,
-            divisionId: divisionId,
-            blockGroupId: item.id,
-          },
+          name: 'setting-blockGroups-blockGroupId',
+          params: { blockGroupId: item.id },
+          query: { contestId: contestId },
         }"
         nuxt
       >
@@ -29,9 +26,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useFetch } from '@nuxtjs/composition-api';
+import { computed, defineComponent, toRefs } from '@nuxtjs/composition-api';
 import { useBlockGroups } from '~/composable';
 import SettingList from '~/components/SettingList.vue';
+import { BlockGroup } from '~/models';
 
 export default defineComponent({
   components: {
@@ -42,25 +40,28 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    divisionId: {
-      type: String,
+    blockGroups: {
+      type: Array as () => BlockGroup[],
       required: true,
     },
   },
-  setup({ contestId, divisionId }) {
-    const { blockGroups, getBlockGroupList, updateOrders } = useBlockGroups();
-    if (contestId !== '' && divisionId !== '') {
-      useFetch(async () => {
-        await getBlockGroupList(contestId);
-      });
-    }
+  setup(props, { emit }) {
+    const { contestId, blockGroups } = toRefs(props);
+    const { updateOrders } = useBlockGroups();
 
     // Sort Division
     const onFlippedBlockGroup = async () => {
-      await updateOrders(contestId, []);
+      await updateOrders(contestId.value, blockGroups.value);
     };
 
-    return { blockGroups, onFlippedBlockGroup };
+    const blockGroupsComputed = computed({
+      get: () => blockGroups.value,
+      set: (val) => {
+        emit('update:blockGroups', val);
+      },
+    });
+
+    return { onFlippedBlockGroup, blockGroupsComputed };
   },
 });
 </script>
