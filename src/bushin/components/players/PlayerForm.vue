@@ -4,23 +4,23 @@
       <v-card-title>選手詳細</v-card-title>
       <v-card-text>
         <v-text-field
-          v-model="player.name"
+          v-model="playerComputed.name"
           label="選手名"
           :rules="validations.name"
         ></v-text-field>
         <v-text-field
-          v-model="player.dojo"
+          v-model="playerComputed.dojo"
           label="道場名"
           :rules="validations.dojo"
         ></v-text-field>
         <v-text-field
-          v-model="player.age"
+          v-model="age"
           label="年齢"
           :rules="validations.age"
           type="number"
         ></v-text-field>
         <v-select
-          v-model="player.rank"
+          v-model="playerComputed.rank"
           :items="ranks"
           :rules="validations.rank"
           attach
@@ -43,8 +43,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
-import { usePlayer } from '~/composable';
+import {
+  computed,
+  defineComponent,
+  ref,
+  toRefs,
+} from '@nuxtjs/composition-api';
+import { Player } from '~/models';
 
 export interface VForm {
   validate: () => boolean;
@@ -54,21 +59,17 @@ export interface VForm {
 
 export default defineComponent({
   props: {
-    contestId: {
-      type: String,
+    player: {
+      type: Object as () => Player,
       required: true,
-    },
-    playerId: {
-      type: String,
-      default: '',
     },
     loading: {
       type: Boolean,
       default: false,
     },
   },
-  setup({ contestId, playerId }, { emit }) {
-    // Division setup
+  setup(props, { emit }) {
+    // Player setup
     const ranks = [
       '8級',
       '7級',
@@ -83,12 +84,22 @@ export default defineComponent({
       '3段',
       '4段',
     ];
-    const { player, getPlayer } = usePlayer();
-    if (contestId !== '' && playerId !== '') {
-      useFetch(async () => {
-        await getPlayer(contestId, playerId);
-      });
-    }
+
+    const { player } = toRefs(props);
+
+    const playerComputed = computed({
+      get: () => player.value,
+      set: (val) => {
+        emit('update:player', val);
+      },
+    });
+
+    const age = computed({
+      get: () => player.value.age,
+      set: (val) => {
+        playerComputed.value.age = !isNaN(Number(val)) ? Number(val) : 0;
+      },
+    });
 
     // validation rules
     const validations = {
@@ -100,7 +111,10 @@ export default defineComponent({
         (value: string) => !!value || '必ず入力してください',
         (value: string) => value.length <= 10 || '10文字以内で入力してください',
       ],
-      age: [(value: string) => !!value || '必ず入力してください'],
+      age: [
+        (value: number) => !!value || '必ず入力してください',
+        (value: number) => value < 100 || '年齢は100以下で入力してください',
+      ],
       rank: [(value: string) => !!value || '級/段は必ず選択してください'],
     };
 
@@ -108,14 +122,15 @@ export default defineComponent({
     const playerForm = ref<VForm>();
     const save = () => {
       if (playerForm.value !== undefined && playerForm.value.validate()) {
-        emit('save', player);
+        emit('save');
       }
     };
 
     return {
-      playerForm,
-      player,
       ranks,
+      playerComputed,
+      age,
+      playerForm,
       validations,
       save,
     };

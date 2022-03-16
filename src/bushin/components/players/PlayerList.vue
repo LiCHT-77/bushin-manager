@@ -25,11 +25,12 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api';
+import { Player } from '~/models';
 
 export default defineComponent({
   props: {
     players: {
-      type: Array,
+      type: Array as () => Player[],
       required: true,
     },
   },

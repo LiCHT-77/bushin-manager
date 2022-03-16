@@ -5,6 +5,20 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-btn
+          outlined
+          color="primary"
+          :to="{
+            name: 'setting-players',
+            query: { contestId },
+          }"
+          nuxt
+          >選手管理</v-btn
+        >
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
         <contest-form
           :contest.sync="contest"
           :loading="contestLoading"
