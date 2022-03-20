@@ -130,7 +130,7 @@ export default defineComponent({
         error({statusCode: 500});
         throw new Error("ref of 'division' is not found");
       }
-      blockGroup.value.divisionRef = division.value.ref;
+      blockGroup.value.divisionId = division.value.id;
       await createBlockGroup(contestId, blockGroup.value).catch((err) => {
         snackbar.setSnackbar({
           text: 'ラウンド情報の保存に失敗しました。',

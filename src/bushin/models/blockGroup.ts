@@ -8,7 +8,7 @@ export class BlockGroup extends Model {
         public name: string = '',
         public isFinished: boolean = false,
         public order: number = 0,
-        public divisionRef: DocumentReference,
+        public divisionId: string = '',
     ) {
         super(id, ref);
     }

@@ -8,6 +8,7 @@ export default function useBlockGroups() {
     const blockGroupRep: BlockGroupRepository = $reps.blockGroupRep;
     const blockGroups = ref<BlockGroup[]>([]);
 
+    // TODO: divisionId を渡すよう修正
     const getBlockGroupList = async (contestId: string, division?: Division) => {
         const blockGroupColKeys = BlockGroupRepository.getCollectionPath(contestId);
 
@@ -15,7 +16,7 @@ export default function useBlockGroups() {
 
         if (division !== undefined) {
             query.push(
-                where('division_ref', '==', division.ref)
+                where('division_id', '==', division.id)
             );
         }
 

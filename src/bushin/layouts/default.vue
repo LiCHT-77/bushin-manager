@@ -20,12 +20,20 @@
 </template>
 
 <script lang="ts">
+import { useContext, useFetch, useRoute } from '@nuxtjs/composition-api';
 import { defineComponent, inject, provide, ref } from '@vue/composition-api';
-import { snackbarStateKey, useSnackbarState } from '~/composable';
+import { blockTreeKey, snackbarStateKey, useBlockTree, useSnackbarState } from '~/composable';
 
 export default defineComponent({
   name: 'DefaultLayout',
   setup() {
+    const { error } = useContext();
+    const route = useRoute();
+    const contestId = route.value.query.contestId;
+    if (typeof contestId !== 'string') {
+      error({ statusCode: 404 });
+      throw new Error("query parameter 'contestId' not found");
+    }
     const drawer = ref(false);
 
     provide(snackbarStateKey, useSnackbarState());
@@ -33,6 +41,15 @@ export default defineComponent({
     if (snackbar === undefined) {
       throw new Error("con't get snackbar");
     }
+
+    provide(blockTreeKey, useBlockTree());
+    const blockTree = inject(blockTreeKey);
+    if (blockTree === undefined) {
+      throw new Error("con't get block tree");
+    }
+    useFetch(async() => {
+      await blockTree.loadTree(contestId);
+    });
 
     return {
       drawer,

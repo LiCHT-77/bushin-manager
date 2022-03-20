@@ -5,7 +5,7 @@
       :draggable="`.${draggable}`"
       handle=".handle"
       :animation="200"
-      @end="emit('flipped', $event)"
+      @end="$emit('flipped', $event)"
     >
       <template v-for="item in itemComputed">
         <v-list-item :key="item.id" :class="draggable">
@@ -52,7 +52,6 @@ export default defineComponent({
     });
     return {
       itemComputed,
-      emit,
     };
   },
 });

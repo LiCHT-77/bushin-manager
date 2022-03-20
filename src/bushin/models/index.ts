@@ -1,3 +1,4 @@
+export * from './block';
 export * from './blockGroup';
 export * from './contest';
 export * from './division';
