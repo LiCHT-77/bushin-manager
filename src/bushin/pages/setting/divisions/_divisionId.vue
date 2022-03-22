@@ -58,7 +58,7 @@ import {
 import DivisionForm from '~/components/divisions/DivisionForm.vue';
 import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
 import BlockGroupSettingList from '~/components/blockGroups/BlockGroupSettingList.vue';
-import { useDivision, useBlockGroup, useBlockGroups, snackbarStateKey, useSnackbarState } from '~/composable';
+import { useDivision, useBlockGroup, useBlockGroups, snackbarStateKey, useSnackbarState, useContestId } from '~/composable';
 import { Division } from '~/models';
 
 export default defineComponent({
@@ -76,11 +76,7 @@ export default defineComponent({
     const snackbar = inject(snackbarStateKey, useSnackbarState());
     const { error, $reps } = useContext();
     const route = useRoute();
-    const contestId = route.value.query.contestId;
-    if (typeof contestId !== 'string') {
-      error({ statusCode: 404 });
-      throw new Error("query parameter 'contestId' not found");
-    }
+    const {contestId} = useContestId();
     const divisionId = route.value.params.divisionId;
 
     const { division, getDivision, updateDivision } = useDivision();

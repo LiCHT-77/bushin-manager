@@ -6,36 +6,50 @@
       }}</v-card-title>
       <v-card-text>
         <v-container>
-          <v-row>
-            <v-col>
+          <v-row dense>
+            <v-col cols="12">
               <v-text-field
                 v-model="blockComputed.name"
                 label="ブロック名"
                 :rules="validations.name"
               ></v-text-field>
+            </v-col>
+            <v-col cols="12">
               <v-select
                 v-model="blockComputed.advance"
                 :items="selectBlocks"
                 label="進出先ブロック"
-                clearable
+                append-icon="mdi-close"
+                @click:append="blockComputed.advance = ''"
               ></v-select>
+            </v-col>
+            <v-col cols="6">
               <v-text-field
                 v-model.number="blockComputed.referee"
                 label="審判数"
                 type="number"
                 :rules="validations.referee"
               ></v-text-field>
+            </v-col>
+            <v-col cols="6">
               <v-text-field
                 v-model.number="blockComputed.winner"
                 label="勝者数"
                 type="number"
                 :rules="validations.winner"
               ></v-text-field>
-              <v-subheader class="pl-0">前戦の合計点で並べ替えるか</v-subheader>
+            </v-col>
+            <v-col cols="6">
               <v-switch
                 v-model="blockComputed.isPlayerOrder"
-                class="mt-0"
+                :label="
+                  blockComputed.isPlayerOrder
+                    ? '前戦の点数で並べ替える'
+                    : '前戦の点数で並べ替えない'
+                "
               ></v-switch>
+            </v-col>
+            <v-col cols="6">
               <v-select
                 v-if="blockComputed.isPlayerOrder"
                 v-model="blockComputed.playerOrderDirection"
@@ -46,13 +60,6 @@
                   { value: 'desc', text: '降順' },
                 ]"
               ></v-select>
-            </v-col>
-            <v-col>
-              <setting-list :items="[]" :draggable="block.id">
-                <template #item-content="{ item }">
-                  <v-list-title>{{ item.name }}/{{ item.dojo }}</v-list-title>
-                </template>
-              </setting-list>
             </v-col>
           </v-row>
         </v-container>
@@ -66,6 +73,43 @@
         >
           保存
         </v-btn>
+        <v-btn
+          v-if="block.id !== ''"
+          color="secondary"
+          outlined
+          nuxt
+          :to="{
+            name: 'setting-blocks-blockId',
+            params: { blockId: block.id },
+            query: { contestId },
+          }"
+          >出場選手</v-btn
+        >
+        <v-spacer></v-spacer>
+        <v-dialog v-model="confirmDialog" :retain-focus="false" width="500">
+          <template #activator="{ on, attrs }">
+            <v-btn color="error" outlined v-bind="attrs" v-on="on">削除</v-btn>
+          </template>
+          <v-card>
+            <v-card-title>ブロック情報削除</v-card-title>
+            <v-card-text>
+              <h3>本当に削除しますか？</h3>
+              <p class="red--text">
+                該当ブロックでの点数記録も参照できなくなります。
+              </p>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text @click="confirmDialog = false">
+                キャンセル
+              </v-btn>
+              <v-btn color="error" text @click="$emit('delete', block.id)">
+                削除
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-card-actions>
     </v-form>
   </v-card>
@@ -80,8 +124,7 @@ import {
   toRefs,
 } from '@nuxtjs/composition-api';
 import { Block } from '~/models';
-import SettingList from '~/components/SettingList.vue';
-import { blockTreeKey } from '~/composable';
+import { blockTreeKey, useContestId } from '~/composable';
 
 export interface VForm {
   validate: () => boolean;
@@ -90,9 +133,6 @@ export interface VForm {
 }
 
 export default defineComponent({
-  components: {
-    SettingList,
-  },
   props: {
     block: {
       type: Object as () => Block,
@@ -104,6 +144,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const { contestId } = useContestId();
     const { block } = toRefs(props);
     const blockComputed = computed({
       get: () => block.value,
@@ -149,12 +190,17 @@ export default defineComponent({
         emit('save');
       }
     };
+
+    const confirmDialog = ref(false);
+
     return {
+      contestId,
       blockComputed,
       selectBlocks,
       validations,
       blockForm,
       save,
+      confirmDialog,
     };
   },
 });

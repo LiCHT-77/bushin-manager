@@ -10,7 +10,10 @@ import usePlayer from "./usePlayer";
 import usePlayers from "./usePlayers";
 import { useSnackbarState, snackbarStateKey } from "./useSnackbar";
 import useLoading from "./useLoading";
-import {useBlockTree, blockTreeKey} from './useBlockTree';
+import { useBlockTree, blockTreeKey } from './useBlockTree';
+import useRecord from "./useRecord";
+import useRecords from "./useRecords";
+import useContestId from "./useContestId";
 
 export {
     useBlock,
@@ -28,4 +31,7 @@ export {
     useLoading,
     useBlockTree,
     blockTreeKey,
+    useRecord,
+    useRecords,
+    useContestId,
 };

@@ -5,6 +5,7 @@
       :draggable="`.${draggable}`"
       handle=".handle"
       :animation="200"
+      :disabled="disabled"
       @end="$emit('flipped', $event)"
     >
       <template v-for="item in itemComputed">
@@ -40,6 +41,10 @@ export default defineComponent({
     draggable: {
       type: String,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, { emit }) {

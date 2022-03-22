@@ -33,14 +33,34 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <block-cards
-          :contest-id="contestId"
-          :blocks.sync="blocks"
-          :form-loading="blockLoading"
-          :drag-disabled="unSavedForm"
-          @save="saveBlock($event)"
-          @flipped="onFlippedBlock()"
-        ></block-cards>
+        <v-container>
+          <draggable
+            v-model="blocks"
+            draggable=".block"
+            handle=".handle"
+            :animation="200"
+            tag="v-row"
+            :disabled="unSavedForm"
+            @end="onFlippedBlock()"
+          >
+            <v-col
+              v-for="(block, index) in blocks"
+              :key="index"
+              class="block"
+              sm="12"
+              md="6"
+              lg="6"
+              xl="6"
+            >
+              <block-form
+                :block.sync="blocks[index]"
+                :loading="blockLoading"
+                @save="saveBlock(index)"
+                @delete="onDeleteBlock($event)"
+              ></block-form>
+            </v-col>
+          </draggable>
+        </v-container>
       </v-col>
     </v-row>
   </v-container>
@@ -50,20 +70,24 @@
 import {
   defineComponent,
   inject,
+  provide,
   ref,
   useContext,
   useFetch,
   useMeta,
   useRoute,
 } from '@nuxtjs/composition-api';
+import draggable from 'vuedraggable';
 import BlockGroupForm from '~/components/blockGroups/BlockGroupForm.vue';
-import blockCards from '~/components/blocks/BlockCards.vue';
+import BlockForm from '~/components/blocks/BlockForm.vue';
 import {
   blockTreeKey,
   snackbarStateKey,
   useBlock,
   useBlockGroup,
   useBlocks,
+  useBlockTree,
+  useContestId,
   useLoading,
   useSnackbarState,
 } from '~/composable';
@@ -71,7 +95,8 @@ import {
 export default defineComponent({
   components: {
     BlockGroupForm,
-    blockCards,
+    draggable,
+    BlockForm,
   },
   setup() {
     // meta
@@ -80,18 +105,15 @@ export default defineComponent({
 
     // setup
     const snackbar = inject(snackbarStateKey, useSnackbarState());
-    const { error, $reps } = useContext();
+    const { $reps } = useContext();
     const route = useRoute();
-    const contestId = route.value.query.contestId;
-    if (typeof contestId !== 'string') {
-      error({ statusCode: 404 });
-      throw new Error("query parameter 'contestId' not found");
-    }
+    const { contestId } = useContestId();
     const blockGroupId = route.value.params.blockGroupId;
 
     // get blockGroup and blocks
     const { blockGroup, getBlockGroup, updateBlockGroup } = useBlockGroup();
-    const { blocks, getBlockList } = useBlocks();
+    const { blocks, getBlockList, updateOrders } = useBlocks();
+    provide(blockTreeKey, useBlockTree());
     const blockTree = inject(blockTreeKey);
     if (blockTree === undefined) {
       throw new Error("con't get block tree");
@@ -114,8 +136,8 @@ export default defineComponent({
       });
     });
 
-    const { loadingSection } = useLoading();
     // block group
+    const { loadingSection } = useLoading();
     const bgLoading = ref(false);
     const saveBlockGroup = async () => {
       await loadingSection(async () => {
@@ -133,7 +155,7 @@ export default defineComponent({
     // block
     const unSavedForm = ref(false);
     const blockLoading = ref(false);
-    const { createBlock, updateBlock } = useBlock();
+    const { createBlock, updateBlock, deleteBlock } = useBlock();
     const saveBlock = async (blockIndex: number) => {
       await loadingSection(async () => {
         const block = blocks.value[blockIndex];
@@ -151,13 +173,37 @@ export default defineComponent({
         blockLoading.value = false;
         throw err;
       });
+      await getBlockList(contestId, blockGroupId).catch((err) => {
+        snackbar.setSnackbar({
+          text: 'ブロック情報の取得に失敗しました。',
+          color: 'error',
+        });
+        throw err;
+      });
     };
 
     const addBlock = () => {
       unSavedForm.value = true;
       const newBlock = $reps.blockRep.newModelInstance();
+      newBlock.divisionId = blockGroup.value.divisionId;
       newBlock.blockGroupId = blockGroupId;
+      newBlock.order = blocks.value.slice(-1)[0].order + 1;
       blocks.value.push(newBlock);
+    };
+
+    const onFlippedBlock = async () => {
+      await updateOrders(contestId, blocks.value);
+    };
+
+    const onDeleteBlock = async (blockId: string) => {
+      await deleteBlock(contestId, blockId);
+      await getBlockList(contestId, blockGroupId).catch((err) => {
+        snackbar.setSnackbar({
+          text: 'ブロック情報の取得に失敗しました。',
+          color: 'error',
+        });
+        throw err;
+      });
     };
 
     return {
@@ -170,6 +216,8 @@ export default defineComponent({
       unSavedForm,
       saveBlock,
       addBlock,
+      onFlippedBlock,
+      onDeleteBlock,
     };
   },
   head: {},

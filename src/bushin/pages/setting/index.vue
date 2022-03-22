@@ -65,12 +65,18 @@ import {
   useContext,
   useFetch,
   useMeta,
-  useRoute,
 } from '@nuxtjs/composition-api';
 import ContestForm from '~/components/contests/ContestForm.vue';
 import DivisionSettingList from '~/components/divisions/DivisionSettingList.vue';
 import DivisionForm from '~/components/divisions/DivisionForm.vue';
-import { snackbarStateKey, useContest, useDivision, useDivisions, useSnackbarState } from '~/composable';
+import {
+  snackbarStateKey,
+  useContest,
+  useContestId,
+  useDivision,
+  useDivisions,
+  useSnackbarState,
+} from '~/composable';
 
 export default defineComponent({
   components: {
@@ -85,18 +91,13 @@ export default defineComponent({
 
     // get contest id
     const snackbar = inject(snackbarStateKey, useSnackbarState());
-    const route = useRoute();
     const { contest, getContest, updateContest } = useContest();
     const { divisions, getDivisionList } = useDivisions();
     const { $reps, error } = useContext();
 
     // get Contest an Divisions
     // get contestId from route query
-    const contestId = route.value.query.contestId;
-    if (typeof contestId !== 'string') {
-      error({ statusCode: 404 });
-      throw new Error("query parameter 'contestId' not found");
-    }
+    const { contestId } = useContestId();
 
     useFetch(async () => {
       await getContest(contestId).catch((err) => {
@@ -118,7 +119,7 @@ export default defineComponent({
       await updateContest(contest.value).catch((err) => {
         snackbar.setSnackbar({
           text: '大会情報の保存に失敗しました。',
-          color: 'error'
+          color: 'error',
         });
         throw err;
       });
@@ -141,7 +142,7 @@ export default defineComponent({
       await createDivision(contestId, division.value).catch((err) => {
         snackbar.setSnackbar({
           text: '階級情報の保存に失敗しました。',
-          color: 'error'
+          color: 'error',
         });
         throw err;
       });

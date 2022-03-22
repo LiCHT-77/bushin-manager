@@ -29,7 +29,7 @@ export abstract class Model {
                         Object.prototype.hasOwnProperty.call(model, key)
                     ) {
 
-                        if(data[snake] instanceof DocumentReference) {
+                        if (data[snake] instanceof DocumentReference) {
                             model[key] = data[snake];
                             continue;
                         }

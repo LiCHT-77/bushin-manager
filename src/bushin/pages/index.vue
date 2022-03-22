@@ -11,7 +11,7 @@
           outlined
           small
           color="primary"
-          :to="{ name: 'setting-create' }"
+          :to="{ name: 'create' }"
           nuxt
           >新大会の作成<v-icon>mdi-plus</v-icon></v-btn
         >

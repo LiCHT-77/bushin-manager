@@ -4,3 +4,4 @@ export * from './divisionRepository';
 export * from './playerRepository';
 export * from './repository';
 export * from './blockRepository';
+export * from './recordRepository';

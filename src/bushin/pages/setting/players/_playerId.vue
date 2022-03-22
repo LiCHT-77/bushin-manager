@@ -21,13 +21,12 @@
 import {
   defineComponent,
   ref,
-  useContext,
   useFetch,
   useMeta,
   useRoute,
 } from '@nuxtjs/composition-api';
 import PlayerForm from '~/components/players/PlayerForm.vue';
-import { usePlayer } from '~/composable';
+import { useContestId, usePlayer } from '~/composable';
 
 export default defineComponent({
   components: {
@@ -39,12 +38,7 @@ export default defineComponent({
     title.value = '選手管理';
 
     const route = useRoute();
-    const { error } = useContext();
-    const contestId = route.value.query.contestId;
-    if (typeof contestId !== 'string') {
-      error({ statusCode: 404 });
-      throw new Error("query parameter 'contestId' not found");
-    }
+    const { contestId } = useContestId();
     const playerId = route.value.params.playerId;
     const { player, getPlayer, updatePlayer } = usePlayer();
 

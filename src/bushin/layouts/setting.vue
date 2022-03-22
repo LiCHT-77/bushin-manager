@@ -21,7 +21,10 @@
 
 <script lang="ts">
 import { defineComponent, inject, provide, ref } from '@vue/composition-api';
-import { snackbarStateKey, useSnackbarState } from '~/composable';
+import {
+  snackbarStateKey,
+  useSnackbarState,
+} from '~/composable';
 
 export default defineComponent({
   name: 'DefaultLayout',

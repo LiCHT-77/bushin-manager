@@ -20,6 +20,7 @@ export class Block extends Model {
         public isPlayerOrder: boolean = false,
         public playerOrderDirection: string = 'asc',
         public order: number = 0,
+        public divisionId: string = '',
         public blockGroupId: string = '',
     ) {
         super(id, ref);

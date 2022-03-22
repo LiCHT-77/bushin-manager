@@ -18,9 +18,14 @@ export default function useBlock() {
         await blockRep.add(collectionPath, block);
     };
 
-    const updateBlock = async (contestId: string, block: Block,) => {
+    const updateBlock = async (contestId: string, block: Block) => {
         const collectionPath = BlockRepository.getCollectionPath(contestId);
         await blockRep.update(collectionPath, block);
+    };
+
+    const deleteBlock = async (contestId: string, blockId: string) => {
+        const collectionPath = BlockRepository.getCollectionPath(contestId);
+        await blockRep.delete(collectionPath, blockId);
     };
 
     return {
@@ -28,5 +33,6 @@ export default function useBlock() {
         getBlock,
         createBlock,
         updateBlock,
+        deleteBlock,
     };
 }

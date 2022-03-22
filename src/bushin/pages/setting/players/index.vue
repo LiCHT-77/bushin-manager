@@ -35,15 +35,19 @@ import {
   defineComponent,
   inject,
   ref,
-  useContext,
   useFetch,
   useMeta,
-  useRoute,
   useRouter,
 } from '@nuxtjs/composition-api';
 import PlayerList from '~/components/players/PlayerList.vue';
 import PlayerForm from '~/components/players/PlayerForm.vue';
-import { usePlayers, usePlayer, snackbarStateKey, useSnackbarState } from '~/composable';
+import {
+  usePlayers,
+  usePlayer,
+  snackbarStateKey,
+  useSnackbarState,
+  useContestId,
+} from '~/composable';
 
 export default defineComponent({
   components: {
@@ -55,13 +59,7 @@ export default defineComponent({
     const { title } = useMeta();
     title.value = '選手管理';
 
-    const route = useRoute();
-    const { error } = useContext();
-    const contestId = route.value.query.contestId;
-    if (typeof contestId !== 'string') {
-      error({ statusCode: 404 });
-      throw new Error("query parameter 'contestId' not found");
-    }
+    const { contestId } = useContestId();
 
     // player list
     const { players, getPlayerList } = usePlayers();

@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, Firestore, getDoc, getDocs, query, QueryConstraint, setDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, query, QueryConstraint, setDoc } from "firebase/firestore";
 import { Model } from "~/models/model";
 import { ModelConstructor } from "~/types/model";
 
@@ -78,5 +78,16 @@ export abstract class Repository<T extends Model, U extends string>{
     async update(collectionPath: U, model: T): Promise<void> {
         const docRef = doc(this.firestore, collectionPath, model.id).withConverter(Model.converter<T>(this.modelConstructor));
         await setDoc(docRef, model);
+    }
+
+    /**
+     * Delete a document without delete sub collection
+     * 
+     * @param collectionPath - collection path for document
+     * @param id - Document id
+     */
+    async delete(collectionPath: U, id: string): Promise<void> {
+        const docRef = doc(this.firestore, collectionPath, id);
+        await deleteDoc(docRef);
     }
 }

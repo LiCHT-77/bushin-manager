@@ -3,7 +3,6 @@
     <v-form ref="contestForm">
       <v-card-title> 基本設定 </v-card-title>
       <v-card-text>
-        <p>{{ contest }}</p>
         <v-text-field
           v-model="contestComputed.name"
           label="大会名"

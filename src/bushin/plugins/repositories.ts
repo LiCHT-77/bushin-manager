@@ -1,4 +1,5 @@
 import { Plugin } from '@nuxt/types';
+import { RecordRepository } from '~/repositories';
 import { BlockGroupRepository } from '~/repositories/blockGroupRepository';
 import { BlockRepository } from '~/repositories/blockRepository';
 import { ContestRepository } from '~/repositories/contestRepository';
@@ -11,6 +12,7 @@ interface Repositories {
     divisionRep: DivisionRepository;
     blockGroupRep: BlockGroupRepository;
     blockRep: BlockRepository;
+    recordRep: RecordRepository;
 }
 
 declare module '@nuxt/types' {
@@ -27,6 +29,7 @@ const repositoriesPlugin: Plugin = (context) => {
     const divisionRep = new DivisionRepository(firestore);
     const blockGroupRep = new BlockGroupRepository(firestore);
     const blockRep = new BlockRepository(firestore);
+    const recordRep = new RecordRepository(firestore);
 
     // Create Repositories object
     const reps: Repositories = {
@@ -35,6 +38,7 @@ const repositoriesPlugin: Plugin = (context) => {
         divisionRep,
         blockGroupRep,
         blockRep,
+        recordRep,
     };
     context.$reps = reps;
 };
